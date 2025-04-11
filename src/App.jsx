@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import UserProfile from "./pages/UserProfile";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectRoute";
+import Settings from "./pages/Settings";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/user-profile" element={<UserProfile />} />
+            <Route path="/settings" element={<Settings />} />
             
           </Route>
         </Routes>
