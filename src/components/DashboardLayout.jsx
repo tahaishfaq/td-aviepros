@@ -18,6 +18,9 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import EditGuestModal from "./pop-ups/EditGuestModal";
 import AddIncidentReportModal from "./pop-ups/AddIncidentReportModal";
+import AddDayVisitorModal from "./pop-ups/AddDayVisitorModal";
+import moment from "moment";
+import AddVacationAlertModal from "./pop-ups/AddVacationAlertModal";
 
 const quickActions = [
   {
@@ -122,26 +125,77 @@ const DashboardLayout = () => {
     }
   };
 
-
   const [isEditGuestModalOpen, setIsEditGuestModalOpen] = useState(false);
   const [selectedGuest, setSelectedGuest] = useState(null);
   const [guests, setGuests] = useState([]);
+  const [dayVisitors, setDayVisitors] = useState([]);
+  const [vacationEntries, setVacationEntries] = useState([]);
 
   const fetchGuests = async () => {
     try {
       const res = await axiosInstance.get(
         `/api/method/aviepros-fetch-guests?homeowner_address=${user?.homeowner_address}`
       );
-      console.log("Fetched data:", res.data);
+      console.log("Fetched guests:", res.data);
       setGuests(res?.data?.guests);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  
+
+  const fetchDayVisitors = async () => {
+    const currentDate = moment()
+      .startOf("day")
+      .add(3, "hours")
+      .format("MM-DD-YYYY HH:mm:ss");
+    console.log("Current date:", currentDate);
+    try {
+      await axiosInstance
+        .get(
+          `/api/resource/Visitor Call-In?fields=["*"]&filters=[["homeowner","=","${user?.homeowner_address}"],["termination_date",">","${currentDate}"]]`
+        )
+        .then((res) => {
+          console.log("Fetched visitors:", res?.data);
+          setDayVisitors(res?.data?.data);
+        });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const fetchVacationEntries = async () => {
+    const currentDate = new Date().toISOString().split("T")[0];
+    const filter = [
+      ["homeowner", "=", user?.homeowner_address],
+      ["vacation_start_date", "<=", currentDate],
+      ["vacation_end_date", ">=", currentDate],
+    ];
+    try {
+      axiosInstance
+        .get(
+          `api/resource/Vacation Call In Entry?fields=["*"]&&filters=${JSON.stringify(
+            filter
+          )}`
+        )
+        .then((res) => {
+          console.log("Fetch vacation entries", res?.data?.data);
+          setVacationEntries(res?.data?.data);
+        });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
     if (user?.homeowner_address) {
       fetchGuests();
+    }
+  }, [user?.homeowner_address]);
+
+  useEffect(() => {
+    if (user?.homeowner_address) {
+      fetchDayVisitors();
+      fetchVacationEntries();
     }
   }, [user?.homeowner_address]);
 
@@ -194,21 +248,20 @@ const DashboardLayout = () => {
         ))}
       </div>
 
-      {/* Main Content Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* Vacations Section */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
           <h2 className="text-sm font-normal text-gray-600">Vacations</h2>
-          {vacations.length > 0 ? (
+          {vacationEntries.length > 0 ? (
             <div className="space-y-4 divide-y-1 divide-[#E9EAEB]">
-              {vacations?.map((item, index) => (
+              {vacationEntries?.map((item, index) => (
                 <div key={index} className="space-y-2 pb-4">
                   <p className="text-gray-500 text-sm font-normal">
-                    {item.text}
+                    {item?.vacation_note}
                   </p>
 
                   <p className="text-gray-700 font-medium text-sm bg-[#F5F5F5] rounded-full py-1.5 px-2.5 inline-flex">
-                    {item.date}
+                    {moment(item?.vacation_start_date).format("D MMMM")} –{" "}
+                    {moment(item?.vacation_end_date).format("D MMMM")}
                   </p>
                 </div>
               ))}
@@ -250,27 +303,30 @@ const DashboardLayout = () => {
           )}
         </div>
 
-        {/* Visitors Section */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
           <h2 className="text-sm font-normal text-gray-600">Visitor</h2>
-          {visitors?.length > 0 ? (
+          {dayVisitors?.length > 0 ? (
             <div className="space-y-3">
-              {visitors?.map((visitor) => (
+              {dayVisitors?.map((visitor, index) => (
                 <div
-                  key={visitor.id}
+                  key={index}
                   className="bg-white p-3 rounded-lg border border-[#E9EAEB] flex justify-between items-center"
                 >
                   <div>
-                    <p className="text-sm font-medium">{visitor.name}</p>
-                    <p className="text-gray-500 text-xs">{visitor.phone}</p>
+                    <p className="text-sm font-medium">
+                      {visitor?.visitor_name}
+                    </p>
+                    <p className="text-gray-500 text-xs">
+                      {visitor?.call_in_type}
+                    </p>
                   </div>
 
                   <span
-                    className={`font-medium text-sm rounded-full py-1.5 px-4 capitalize ${getPillClasses(
-                      visitor.type
+                    className={`font-medium text-sm rounded-full py-1 px-3 capitalize ${getPillClasses(
+                      visitor.category
                     )}`}
                   >
-                    {visitor.type}
+                    {visitor.category}
                   </span>
                 </div>
               ))}
@@ -320,11 +376,13 @@ const DashboardLayout = () => {
               {guests?.map((guest, index) => (
                 <div
                   key={index}
-                  onClick={()=> handleGuestClick(guest)}
+                  onClick={() => handleGuestClick(guest)}
                   className="bg-white p-3 rounded-lg border border-[#E9EAEB] flex justify-between items-center"
                 >
                   <div>
-                    <p className="text-[15px] font-medium">{guest.guest_name}</p>
+                    <p className="text-[15px] font-medium">
+                      {guest.guest_name}
+                    </p>
                   </div>
 
                   <span
@@ -411,97 +469,34 @@ const DashboardLayout = () => {
         </div>
       </div>
 
-      <AddGuestModal open={isAddGuestModalOpen} setOpen={closeAddGuestModal} onUpdate={fetchGuests}/>
-      <EditGuestModal open={isEditGuestModalOpen} setOpen={setIsEditGuestModalOpen} guest={selectedGuest} onUpdate={fetchGuests}/>
+      <AddGuestModal
+        open={isAddGuestModalOpen}
+        setOpen={closeAddGuestModal}
+        onUpdate={fetchGuests}
+      />
+      <EditGuestModal
+        open={isEditGuestModalOpen}
+        setOpen={setIsEditGuestModalOpen}
+        guest={selectedGuest}
+        onUpdate={fetchGuests}
+      />
 
-      <AddIncidentReportModal  open={isIncidentReportModalOpen} setOpen={closeIncidentReportModal} />
+      <AddIncidentReportModal
+        open={isIncidentReportModalOpen}
+        setOpen={closeIncidentReportModal}
+      />
 
-      {isDayVisitorModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Day Visitor
-              </h2>
-              <button
-                onClick={closeDayVisitorModal}
-                className="text-gray-500 hover:text-gray-700 focus:outline-none"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <p className="text-gray-600">
-              This is the Day Visitor pop-up. Add your content here.
-            </p>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={closeDayVisitorModal}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AddDayVisitorModal
+        open={isDayVisitorModalOpen}
+        setOpen={closeDayVisitorModal}
+        onUpdate={fetchDayVisitors}
+      />
 
-      {/* Vacation Alert Modal */}
-      {isVacationAlertModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Vacation Alert
-              </h2>
-              <button
-                onClick={closeVacationAlertModal}
-                className="text-gray-500 hover:text-gray-700 focus:outline-none"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <p className="text-gray-600">
-              This is the Vacation Alert pop-up. Add your content here.
-            </p>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={closeVacationAlertModal}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-     
+      <AddVacationAlertModal
+        open={isVacationAlertModalOpen}
+        setOpen={closeVacationAlertModal}
+        onUpdate={fetchVacationEntries}
+      />
     </div>
   );
 };

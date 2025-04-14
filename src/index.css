@@ -30,3 +30,11 @@ body {
 .shadow-popup {
   box-shadow: 0px 1px 2px 0px #0a0d120d;
 }
+
+.rdtOpen input{
+  width: 100% !important;
+}
+
+.rdtPicker{
+  bottom: 0;
+}
