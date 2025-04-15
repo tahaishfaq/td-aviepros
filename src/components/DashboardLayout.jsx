@@ -23,6 +23,7 @@ import AddIncidentReportModal from "./pop-ups/AddIncidentReportModal";
 import AddDayVisitorModal from "./pop-ups/AddDayVisitorModal";
 import moment from "moment";
 import AddVacationAlertModal from "./pop-ups/AddVacationAlertModal";
+import EditVacationAlertModal from "./pop-ups/EditVacationAlertModal";
 
 const quickActions = [
   {
@@ -180,8 +181,16 @@ const DashboardLayout = () => {
     setIsEditGuestModalOpen(true);
   };
 
+  const handleVacationClick = (vacation) => {
+    setSelectedVacation(vacation);
+    setIsEditVacationModalOpen(true);
+  };
+
   const [isEditGuestModalOpen, setIsEditGuestModalOpen] = useState(false);
   const [selectedGuest, setSelectedGuest] = useState(null);
+
+  const [isEditVacationModalOpen, setIsEditVacationModalOpen] = useState(false);
+  const [selectedVacation, setSelectedVacation] = useState(null);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-0 lg:px-0 md:px-2 pt-6 pb-3 space-y-6">
@@ -241,9 +250,9 @@ const DashboardLayout = () => {
               ))}
             </div>
           ) : vacationEntries.length > 0 ? (
-            <div className="space-y-4 divide-y-1 divide-[#E9EAEB]">
+            <div className="space-y-4 divide-y-1 divide-[#E9EAEB]" >
               {vacationEntries?.map((item, index) => (
-                <div key={index} className="space-y-2 pb-4">
+                <div key={index} className="space-y-2 pb-4 cursor-pointer" onClick={() => handleVacationClick(item)}>
                   <p className="text-gray-500 text-sm font-normal">
                     {item?.vacation_note}
                   </p>
@@ -509,6 +518,12 @@ const DashboardLayout = () => {
         open={isVacationAlertModalOpen}
         setOpen={closeVacationAlertModal}
         onUpdate={fetchVacationEntries}
+      />
+      <EditVacationAlertModal 
+      open={isEditVacationModalOpen}
+      setOpen={setIsEditVacationModalOpen}
+      onUpdate={fetchVacationEntries}
+      vacation={selectedVacation}
       />
     </div>
   );
