@@ -7,6 +7,8 @@ import UserProfile from "./pages/UserProfile";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectRoute";
 import Settings from "./pages/Settings";
+import Cars from "./pages/Cars";
+import Members from "./pages/Members";
 
 
 function App() {
@@ -19,7 +21,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/user-profile" element={<UserProfile />} />
             <Route path="/settings" element={<Settings />} />
-            
+            <Route path="/cars" element={<Cars />} />
+            <Route path="/members" element={<Members />} />
           </Route>
         </Routes>
       </AuthProvider>

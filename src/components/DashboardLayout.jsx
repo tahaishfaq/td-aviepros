@@ -6,6 +6,8 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/outline";
 import React, { useEffect, useState } from "react";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton"; // Import react-loading-skeleton
+import "react-loading-skeleton/dist/skeleton.css"; // Import skeleton CSS
 import claps from "../assets/icons/clap 1.png";
 import location_user from "../assets/icons/location-user-01.png";
 import add_team from "../assets/icons/add-team.png";
@@ -26,7 +28,6 @@ const quickActions = [
   {
     title: "Vacation Alert",
     icon: calendar,
-    // badge: 17,
   },
   {
     title: "Day Visitor",
@@ -42,26 +43,24 @@ const quickActions = [
   },
 ];
 
-const vacations = [
-  {
-    text: "Office ipsum you must be muted. Back-end incentivize sandwich high creep finish cross-pollination. Our digital underlying proceduralize don’t.",
-    date: "17 March – 25 March",
-  },
-  {
-    text: "Office ipsum you must be muted. Back-end incentivize sandwich high creep finish cross-pollination. Our digital underlying proceduralize don’t.",
-    date: "17 March – 25 March",
-  },
-];
-
 const DashboardLayout = () => {
   const { user } = useAuth();
+
   // Separate states for each modal
   const [isDayVisitorModalOpen, setIsDayVisitorModalOpen] = useState(false);
   const [isAddGuestModalOpen, setIsAddGuestModalOpen] = useState(false);
-  const [isVacationAlertModalOpen, setIsVacationAlertModalOpen] =
-    useState(false);
-  const [isIncidentReportModalOpen, setIsIncidentReportModalOpen] =
-    useState(false);
+  const [isVacationAlertModalOpen, setIsVacationAlertModalOpen] = useState(false);
+  const [isIncidentReportModalOpen, setIsIncidentReportModalOpen] = useState(false);
+
+  // Loading states for each API call
+  const [isLoadingVacations, setIsLoadingVacations] = useState(true);
+  const [isLoadingVisitors, setIsLoadingVisitors] = useState(true);
+  const [isLoadingGuests, setIsLoadingGuests] = useState(true);
+
+  // Data states
+  const [guests, setGuests] = useState([]);
+  const [dayVisitors, setDayVisitors] = useState([]);
+  const [vacationEntries, setVacationEntries] = useState([]);
 
   // Handle card clicks to open the corresponding modal
   const handleCardClick = (title) => {
@@ -89,29 +88,8 @@ const DashboardLayout = () => {
   const closeVacationAlertModal = () => setIsVacationAlertModalOpen(false);
   const closeIncidentReportModal = () => setIsIncidentReportModalOpen(false);
 
-  const visitors = [
-    {
-      id: 1,
-      name: "Wilson Schleifer",
-      phone: "415-555-0132",
-      type: "Day Visitor",
-    },
-    {
-      id: 2,
-      name: "Wilson Schleifer",
-      phone: "415-555-0132",
-      type: "Contractor",
-    },
-    {
-      id: 3,
-      name: "Wilson Schleifer",
-      phone: "415-555-0132",
-      type: "Delivery",
-    },
-  ];
-
   const getPillClasses = (visitorType) => {
-    const typeLower = visitorType.toLowerCase();
+    const typeLower = visitorType?.toLowerCase();
 
     switch (typeLower) {
       case "day visitor":
@@ -125,21 +103,19 @@ const DashboardLayout = () => {
     }
   };
 
-  const [isEditGuestModalOpen, setIsEditGuestModalOpen] = useState(false);
-  const [selectedGuest, setSelectedGuest] = useState(null);
-  const [guests, setGuests] = useState([]);
-  const [dayVisitors, setDayVisitors] = useState([]);
-  const [vacationEntries, setVacationEntries] = useState([]);
-
   const fetchGuests = async () => {
+    setIsLoadingGuests(true); // Set loading state to true
     try {
       const res = await axiosInstance.get(
         `/api/method/aviepros-fetch-guests?homeowner_address=${user?.homeowner_address}`
       );
       console.log("Fetched guests:", res.data);
-      setGuests(res?.data?.guests);
+      setGuests(res?.data?.guests || []);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching guests:", error);
+      setGuests([]); // Set to empty array on error
+    } finally {
+      setIsLoadingGuests(false); // Set loading state to false
     }
   };
 
@@ -149,17 +125,18 @@ const DashboardLayout = () => {
       .add(3, "hours")
       .format("MM-DD-YYYY HH:mm:ss");
     console.log("Current date:", currentDate);
+    setIsLoadingVisitors(true); // Set loading state to true
     try {
-      await axiosInstance
-        .get(
-          `/api/resource/Visitor Call-In?fields=["*"]&filters=[["homeowner","=","${user?.homeowner_address}"],["termination_date",">","${currentDate}"]]`
-        )
-        .then((res) => {
-          console.log("Fetched visitors:", res?.data);
-          setDayVisitors(res?.data?.data);
-        });
+      const res = await axiosInstance.get(
+        `/api/resource/Visitor Call-In?fields=["*"]&filters=[["homeowner","=","${user?.homeowner_address}"],["termination_date",">","${currentDate}"]]`
+      );
+      console.log("Fetched visitors:", res?.data);
+      setDayVisitors(res?.data?.data || []);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching visitors:", error);
+      setDayVisitors([]); // Set to empty array on error
+    } finally {
+      setIsLoadingVisitors(false); // Set loading state to false
     }
   };
 
@@ -170,19 +147,18 @@ const DashboardLayout = () => {
       ["vacation_start_date", "<=", currentDate],
       ["vacation_end_date", ">=", currentDate],
     ];
+    setIsLoadingVacations(true); // Set loading state to true
     try {
-      axiosInstance
-        .get(
-          `api/resource/Vacation Call In Entry?fields=["*"]&&filters=${JSON.stringify(
-            filter
-          )}`
-        )
-        .then((res) => {
-          console.log("Fetch vacation entries", res?.data?.data);
-          setVacationEntries(res?.data?.data);
-        });
+      const res = await axiosInstance.get(
+        `api/resource/Vacation Call In Entry?fields=["*"]&&filters=${JSON.stringify(filter)}`
+      );
+      console.log("Fetch vacation entries", res?.data?.data);
+      setVacationEntries(res?.data?.data || []);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching vacation entries:", error);
+      setVacationEntries([]); // Set to empty array on error
+    } finally {
+      setIsLoadingVacations(false); // Set loading state to false
     }
   };
 
@@ -203,6 +179,9 @@ const DashboardLayout = () => {
     setSelectedGuest(guest);
     setIsEditGuestModalOpen(true);
   };
+
+  const [isEditGuestModalOpen, setIsEditGuestModalOpen] = useState(false);
+  const [selectedGuest, setSelectedGuest] = useState(null);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-0 lg:px-0 md:px-2 pt-6 pb-3 space-y-6">
@@ -249,16 +228,25 @@ const DashboardLayout = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Vacations Section */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
           <h2 className="text-sm font-normal text-gray-600">Vacations</h2>
-          {vacationEntries.length > 0 ? (
+          {isLoadingVacations ? (
+            <div className="space-y-4">
+              {[...Array(2)].map((_, index) => (
+                <div key={index} className="space-y-2">
+                  <Skeleton height={20} count={2} />
+                  <Skeleton height={30} width={150} />
+                </div>
+              ))}
+            </div>
+          ) : vacationEntries.length > 0 ? (
             <div className="space-y-4 divide-y-1 divide-[#E9EAEB]">
               {vacationEntries?.map((item, index) => (
                 <div key={index} className="space-y-2 pb-4">
                   <p className="text-gray-500 text-sm font-normal">
                     {item?.vacation_note}
                   </p>
-
                   <p className="text-gray-700 font-medium text-sm bg-[#F5F5F5] rounded-full py-1.5 px-2.5 inline-flex">
                     {moment(item?.vacation_start_date).format("D MMMM")} –{" "}
                     {moment(item?.vacation_end_date).format("D MMMM")}
@@ -296,16 +284,32 @@ const DashboardLayout = () => {
                   stroke-linejoin="round"
                 />
               </svg>
-              <span className="text-gray-400 text-xs font-normal ">
+              <span className="text-gray-400 text-xs font-normal">
                 No result found
               </span>
             </div>
           )}
         </div>
 
+        {/* Visitor Section */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
           <h2 className="text-sm font-normal text-gray-600">Visitor</h2>
-          {dayVisitors?.length > 0 ? (
+          {isLoadingVisitors ? (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-3 rounded-lg border border-[#E9EAEB] flex justify-between items-center"
+                >
+                  <div className="space-y-2">
+                    <Skeleton height={20} width={120} />
+                    <Skeleton height={16} width={80} />
+                  </div>
+                  <Skeleton height={30} width={100} />
+                </div>
+              ))}
+            </div>
+          ) : dayVisitors?.length > 0 ? (
             <div className="space-y-3">
               {dayVisitors?.map((visitor, index) => (
                 <div
@@ -320,7 +324,6 @@ const DashboardLayout = () => {
                       {visitor?.call_in_type}
                     </p>
                   </div>
-
                   <span
                     className={`font-medium text-sm rounded-full py-1 px-3 capitalize ${getPillClasses(
                       visitor.category
@@ -361,7 +364,7 @@ const DashboardLayout = () => {
                   stroke-linejoin="round"
                 />
               </svg>
-              <span className="text-gray-400 text-xs font-normal ">
+              <span className="text-gray-400 text-xs font-normal">
                 No result found
               </span>
             </div>
@@ -371,7 +374,21 @@ const DashboardLayout = () => {
         {/* Guests Section */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
           <h2 className="text-sm font-normal text-gray-600">Guest</h2>
-          {guests?.length > 0 ? (
+          {isLoadingGuests ? (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-3 rounded-lg border border-[#E9EAEB] flex justify-between items-center"
+                >
+                  <div className="space-y-2">
+                    <Skeleton height={20} width={120} />
+                  </div>
+                  <Skeleton height={30} width={100} />
+                </div>
+              ))}
+            </div>
+          ) : guests?.length > 0 ? (
             <div className="space-y-3 cursor-pointer">
               {guests?.map((guest, index) => (
                 <div
@@ -384,7 +401,6 @@ const DashboardLayout = () => {
                       {guest.guest_name}
                     </p>
                   </div>
-
                   <span
                     className={`font-medium text-gray-700 bg-[#F5F5F5] text-sm rounded-full py-0.5 px-3 capitalize`}
                   >
@@ -411,7 +427,7 @@ const DashboardLayout = () => {
                   stroke-linejoin="round"
                 />
                 <path
-                  d="M15.5 6.5C15.5 8.98528 13.4853 11 11 11C8.51472 11 6.5 8.98528 6.5 6.5C6.5 4.01472 8.51472 2 11 2C13.4853 2 15.5 4.01472 15.5 6.5Z"
+                  d="M15.5 6.5C15.5 8.98528 13.4853 11 11 11C8.51472 11 6.5 8.98528 6.5 6.5C6.5 4.01472 8.51472 2 11 2C13.4853 2 15.5 4.014 lega72 15.5 6.5Z"
                   stroke="currentColor"
                   stroke-width="1.5"
                 />
@@ -423,7 +439,7 @@ const DashboardLayout = () => {
                   stroke-linejoin="round"
                 />
               </svg>
-              <span className="text-gray-400 text-xs font-normal ">
+              <span className="text-gray-400 text-xs font-normal">
                 No result found
               </span>
             </div>
@@ -462,7 +478,7 @@ const DashboardLayout = () => {
                 stroke-linejoin="round"
               />
             </svg>
-            <span className="text-gray-400 text-xs font-normal ">
+            <span className="text-gray-400 text-xs font-normal">
               No result found
             </span>
           </div>
@@ -480,18 +496,15 @@ const DashboardLayout = () => {
         guest={selectedGuest}
         onUpdate={fetchGuests}
       />
-
       <AddIncidentReportModal
         open={isIncidentReportModalOpen}
         setOpen={closeIncidentReportModal}
       />
-
       <AddDayVisitorModal
         open={isDayVisitorModalOpen}
         setOpen={closeDayVisitorModal}
         onUpdate={fetchDayVisitors}
       />
-
       <AddVacationAlertModal
         open={isVacationAlertModalOpen}
         setOpen={closeVacationAlertModal}
