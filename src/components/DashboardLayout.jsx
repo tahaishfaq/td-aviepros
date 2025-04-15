@@ -24,6 +24,7 @@ import AddDayVisitorModal from "./pop-ups/AddDayVisitorModal";
 import moment from "moment";
 import AddVacationAlertModal from "./pop-ups/AddVacationAlertModal";
 import EditVacationAlertModal from "./pop-ups/EditVacationAlertModal";
+import EditDayVisitorModal from "./pop-ups/EditDayVisitorModal";
 
 const quickActions = [
   {
@@ -186,11 +187,19 @@ const DashboardLayout = () => {
     setIsEditVacationModalOpen(true);
   };
 
+  const handleVisitorClick = (visitor) => { 
+    setSelectedVisitor(visitor);
+    setIsEditVisitorModalOpen(true);
+  }
+
   const [isEditGuestModalOpen, setIsEditGuestModalOpen] = useState(false);
   const [selectedGuest, setSelectedGuest] = useState(null);
 
   const [isEditVacationModalOpen, setIsEditVacationModalOpen] = useState(false);
   const [selectedVacation, setSelectedVacation] = useState(null);
+
+  const [isEditVisitorModalOpen, setIsEditVisitorModalOpen] = useState(false);
+  const [selectedVisitor, setSelectedVisitor] = useState(null);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-0 lg:px-0 md:px-2 pt-6 pb-3 space-y-6">
@@ -323,7 +332,8 @@ const DashboardLayout = () => {
               {dayVisitors?.map((visitor, index) => (
                 <div
                   key={index}
-                  className="bg-white p-3 rounded-lg border border-[#E9EAEB] flex justify-between items-center"
+                  onClick={() => handleVisitorClick(visitor)}
+                  className="bg-white p-3 rounded-lg cursor-pointer border border-[#E9EAEB] flex justify-between items-center"
                 >
                   <div>
                     <p className="text-sm font-medium">
@@ -524,6 +534,12 @@ const DashboardLayout = () => {
       setOpen={setIsEditVacationModalOpen}
       onUpdate={fetchVacationEntries}
       vacation={selectedVacation}
+      />
+      <EditDayVisitorModal 
+      open={isEditVisitorModalOpen}
+      setOpen={setIsEditVisitorModalOpen}
+      onUpdate={fetchDayVisitors}
+      visitor={selectedVisitor}
       />
     </div>
   );

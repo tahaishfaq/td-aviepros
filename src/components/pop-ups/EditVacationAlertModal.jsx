@@ -7,7 +7,7 @@ import {
     TransitionChild,
   } from "@headlessui/react";
   import { XMarkIcon } from "@heroicons/react/24/outline";
-  import { Fragment, useState } from "react"; // Add useState for toggling the picker
+  import { Fragment, useState, useEffect } from "react"; // Add useEffect for debugging
   import { useFormik } from "formik";
   import axiosInstance from "../../utils/axiosInstance";
   import { toast, Toaster } from "sonner";
@@ -17,22 +17,37 @@ import {
   import "react-date-range/dist/theme/default.css"; // Theme CSS file
   
   export default function EditVacationAlertModal({ open, setOpen, vacation, onUpdate }) {
-    console.log("Vacation data:", vacation);
+   
   
     // State for managing the date range and picker visibility
     const [dateRange, setDateRange] = useState([
       {
         startDate: vacation?.vacation_start_date
-          ? moment(vacation.vacation_start_date).toDate()
+          ? moment(vacation.vacation_start_date, "YYYY-MM-DD").toDate()
           : null,
         endDate: vacation?.vacation_end_date
-          ? moment(vacation.vacation_end_date).toDate()
+          ? moment(vacation.vacation_end_date, "YYYY-MM-DD").toDate()
           : null,
         key: "selection",
       },
     ]);
     const [showPicker, setShowPicker] = useState(false);
   
+    // Log the parsed dates to verify they're correct
+    useEffect(() => {
+        setDateRange([
+          {
+            startDate: vacation?.vacation_start_date
+              ? moment(vacation.vacation_start_date, "YYYY-MM-DD").toDate()
+              : null,
+            endDate: vacation?.vacation_end_date
+              ? moment(vacation.vacation_end_date, "YYYY-MM-DD").toDate()
+              : null,
+            key: "selection",
+          },
+        ]);
+      }, [vacation]);
+
     // Formik setup for editing the vacation
     const formik = useFormik({
       initialValues: {
@@ -40,6 +55,11 @@ import {
       },
       enableReinitialize: true,
       onSubmit: async (values, { setSubmitting }) => {
+        if (!dateRange[0].startDate || !dateRange[0].endDate) {
+            toast.error("Please select a date range");
+            setSubmitting(false);
+            return;
+          }
         const json = {
           vacation_note: values.vacationNote,
           vacation_start_date: dateRange[0].startDate

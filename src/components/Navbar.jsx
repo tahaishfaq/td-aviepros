@@ -239,9 +239,9 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-2 lg:px-2">
         <div className="relative flex h-16 items-center justify-between">
           <div className="flex items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex shrink-0 items-center">
+            <Link to="/" className="flex shrink-0 items-center">
               <img alt="Your Company" src={logo2} className="h-11 w-auto" />
-            </div>
+            </Link>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 {navigation.map((item) => (
