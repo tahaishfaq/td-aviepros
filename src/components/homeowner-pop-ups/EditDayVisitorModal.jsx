@@ -54,7 +54,7 @@ export default function EditDayVisitorModal({
   visitor,
   onUpdate,
 }) {
-  console.log("Visitor data:", visitor);
+ 
 
   // Split visitor_name into first_name and last_name for the form
   const [firstName, lastName] = visitor?.visitor_name

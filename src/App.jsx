@@ -7,8 +7,8 @@ import UserProfile from "./pages/UserProfile";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectRoute";
 import Settings from "./pages/Settings";
-import Cars from "./pages/Cars";
 import Members from "./pages/Members";
+import Cars from "./pages/Cars";
 
 
 function App() {

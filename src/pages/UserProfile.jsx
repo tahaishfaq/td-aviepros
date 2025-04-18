@@ -40,8 +40,8 @@ const UserProfile = () => {
         (user?.name?.split(" ").length > 1 ? user?.name?.split(" ")[1] : "") ||
         "",
       email: user?.email || "",
-      contactNumber: user?.phone || user?.contact_number || "N/A",
-      address: user?.address || "N/A",
+      contactNumber: user?.phone || user?.contact_number || "",
+      address: user?.address || "",
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -78,7 +78,7 @@ const UserProfile = () => {
           json
         );
 
-        console.log("edit-profile", res?.data?.message?.user);
+        console.log("edit-profile", res?.data);
         updateUser(res?.data?.message?.user);
 
         setIsEditing(false);

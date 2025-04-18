@@ -1,12 +1,5 @@
-import {
-  CalendarIcon,
-  DocumentTextIcon,
-  UserIcon,
-  UserPlusIcon,
-  UsersIcon,
-} from "@heroicons/react/24/outline";
 import React, { useEffect, useState } from "react";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton"; // Import react-loading-skeleton
+import Skeleton from "react-loading-skeleton"; // Import react-loading-skeleton
 import "react-loading-skeleton/dist/skeleton.css"; // Import skeleton CSS
 import claps from "../assets/icons/clap 1.png";
 import location_user from "../assets/icons/location-user-01.png";
@@ -14,17 +7,16 @@ import add_team from "../assets/icons/add-team.png";
 import arrow from "../assets/icons/arrow.png";
 import calendar from "../assets/icons/calendar-01.png";
 import report from "../assets/icons/file-02.png";
-import AddGuestModal from "./pop-ups/AddGuestModal";
+import AddGuestModal from "./homeowner-pop-ups/AddGuestModal";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
-import EditGuestModal from "./pop-ups/EditGuestModal";
-import AddIncidentReportModal from "./pop-ups/AddIncidentReportModal";
-import AddDayVisitorModal from "./pop-ups/AddDayVisitorModal";
+import EditGuestModal from "./homeowner-pop-ups/EditGuestModal";
+import AddIncidentReportModal from "./homeowner-pop-ups/AddIncidentReportModal";
+import AddDayVisitorModal from "./homeowner-pop-ups/AddDayVisitorModal";
 import moment from "moment";
-import AddVacationAlertModal from "./pop-ups/AddVacationAlertModal";
-import EditVacationAlertModal from "./pop-ups/EditVacationAlertModal";
-import EditDayVisitorModal from "./pop-ups/EditDayVisitorModal";
+import AddVacationAlertModal from "./homeowner-pop-ups/AddVacationAlertModal";
+import EditVacationAlertModal from "./homeowner-pop-ups/EditVacationAlertModal";
+import EditDayVisitorModal from "./homeowner-pop-ups/EditDayVisitorModal";
 
 const quickActions = [
   {
