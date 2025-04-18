@@ -7,8 +7,9 @@ import UserProfile from "./pages/UserProfile";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectRoute";
 import Settings from "./pages/Settings";
-import Members from "./pages/Members";
+
 import Cars from "./pages/Cars";
+import MembersLayout from "./pages/MembersLayout";
 
 
 function App() {
@@ -22,7 +23,7 @@ function App() {
             <Route path="/user-profile" element={<UserProfile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/cars" element={<Cars />} />
-            <Route path="/members" element={<Members />} />
+            <Route path="/members" element={<MembersLayout />} />
           </Route>
         </Routes>
       </AuthProvider>
