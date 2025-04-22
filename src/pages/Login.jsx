@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import logo from "../assets/logo.png";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { toast, Toaster } from "sonner";
@@ -142,6 +142,9 @@ const Login = () => {
               {loading ? "Logging in..." : "Submit"}
             </button>
           </form>
+          <Link to="/forget-password" className="flex justify-center">
+            <p className="text-center text-sm font-medium text-green-600">Forget Password</p>
+          </Link>
         </div>
       </div>
     </>

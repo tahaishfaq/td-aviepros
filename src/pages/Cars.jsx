@@ -7,7 +7,9 @@ import ClubMemberCars from "./ClubMemberCars";
 
 const dashboardLayouts = {
   "Primary Member": HomeOwnerCars,
+  "Secondary Member": HomeOwnerCars,
   "Club Primary Member": ClubMemberCars,
+  "Club Secondary Member": ClubMemberCars,
 };
 
 const Cars = () => {

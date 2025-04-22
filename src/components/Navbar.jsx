@@ -20,7 +20,13 @@ function classNames(...classes) {
 }
 
 // Define menu items as an array of objects
-const menuItems = [
+
+
+export default function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const menuItems = [
   {
     label: "Your Profile",
     link: "/user-profile",
@@ -49,8 +55,8 @@ const menuItems = [
     ),
   },
   {
-    label: "Member",
-    link: "/members",
+    label: user?.is_101_duntreath == 1 ? "Manager" : "Member",
+    link: user?.is_101_duntreath == 1 ? "/managers" : "/members",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -190,10 +196,6 @@ const menuItems = [
     ),
   },
 ];
-
-export default function Navbar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();

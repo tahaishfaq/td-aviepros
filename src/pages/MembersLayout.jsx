@@ -8,7 +8,9 @@ import InviteClubMembers from "./InviteClubMembers";
 
 const dashboardLayouts = {
   "Primary Member": InviteHomeOwnerMembers,
+  "Secondary Member": InviteHomeOwnerMembers,
   "Club Primary Member": InviteClubMembers,
+  "Club Secondary Member": InviteClubMembers,
 };
 
 const MembersLayout = () => {

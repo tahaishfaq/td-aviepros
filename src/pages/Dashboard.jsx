@@ -6,7 +6,9 @@ import { useAuth } from "../context/AuthContext";
 
 const dashboardLayouts = {
   "Primary Member": DashboardLayout,
-  "Club Primary Member": ClubDashboardLayout
+  "Secondary Member": DashboardLayout,
+  "Club Primary Member": ClubDashboardLayout,
+  "Club Secondary Member": ClubDashboardLayout,
 };
 
 const Dashboard = () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Skeleton from "react-loading-skeleton"; // Import react-loading-skeleton
-import "react-loading-skeleton/dist/skeleton.css"; // Import skeleton CSS
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import claps from "../assets/icons/clap 1.png";
 import location_user from "../assets/icons/location-user-01.png";
 import add_team from "../assets/icons/add-team.png";
@@ -18,33 +18,55 @@ import AddVacationAlertModal from "./homeowner-pop-ups/AddVacationAlertModal";
 import EditVacationAlertModal from "./homeowner-pop-ups/EditVacationAlertModal";
 import EditDayVisitorModal from "./homeowner-pop-ups/EditDayVisitorModal";
 
-const quickActions = [
-  {
-    title: "Vacation Alert",
-    icon: calendar,
-  },
-  {
-    title: "Day Visitor",
-    icon: location_user,
-  },
-  {
-    title: "Add Guest",
-    icon: add_team,
-  },
-  {
-    title: "Incident Report",
-    icon: report,
-  },
-];
-
+// Define quick actions, conditionally excluding "Vacation Alert" and changing "Add Guest" copy
 const DashboardLayout = () => {
   const { user } = useAuth();
+
+  console.log(user)
+
+  // Conditionally define quick actions based on user?.is_101_duntreath
+  const quickActions =
+    user?.is_101_duntreath == 1
+      ? [
+          {
+            title: "Day Visitor",
+            icon: location_user,
+          },
+          {
+            title: "Add Employee", // Changed copy from "Add Guest"
+            icon: add_team,
+          },
+          {
+            title: "Incident Report",
+            icon: report,
+          },
+        ]
+      : [
+          {
+            title: "Vacation Alert",
+            icon: calendar,
+          },
+          {
+            title: "Day Visitor",
+            icon: location_user,
+          },
+          {
+            title: "Add Guest",
+            icon: add_team,
+          },
+          {
+            title: "Incident Report",
+            icon: report,
+          },
+        ];
 
   // Separate states for each modal
   const [isDayVisitorModalOpen, setIsDayVisitorModalOpen] = useState(false);
   const [isAddGuestModalOpen, setIsAddGuestModalOpen] = useState(false);
-  const [isVacationAlertModalOpen, setIsVacationAlertModalOpen] = useState(false);
-  const [isIncidentReportModalOpen, setIsIncidentReportModalOpen] = useState(false);
+  const [isVacationAlertModalOpen, setIsVacationAlertModalOpen] =
+    useState(false);
+  const [isIncidentReportModalOpen, setIsIncidentReportModalOpen] =
+    useState(false);
 
   // Loading states for each API call
   const [isLoadingVacations, setIsLoadingVacations] = useState(true);
@@ -55,6 +77,7 @@ const DashboardLayout = () => {
   const [guests, setGuests] = useState([]);
   const [dayVisitors, setDayVisitors] = useState([]);
   const [vacationEntries, setVacationEntries] = useState([]);
+  const [members] = useState([]);
 
   // Handle card clicks to open the corresponding modal
   const handleCardClick = (title) => {
@@ -63,10 +86,13 @@ const DashboardLayout = () => {
         setIsDayVisitorModalOpen(true);
         break;
       case "Add Guest":
+      case "Add Employee": // Handle both cases since the component is the same
         setIsAddGuestModalOpen(true);
         break;
       case "Vacation Alert":
-        setIsVacationAlertModalOpen(true);
+        if (user?.is_101_duntreath != 1) {
+          setIsVacationAlertModalOpen(true);
+        }
         break;
       case "Incident Report":
         setIsIncidentReportModalOpen(true);
@@ -84,7 +110,6 @@ const DashboardLayout = () => {
 
   const getPillClasses = (visitorType) => {
     const typeLower = visitorType?.toLowerCase();
-
     switch (typeLower) {
       case "day visitor":
         return "bg-[#EFF8FF] text-[#175CD3]";
@@ -98,18 +123,17 @@ const DashboardLayout = () => {
   };
 
   const fetchGuests = async () => {
-    setIsLoadingGuests(true); // Set loading state to true
+    
     try {
       const res = await axiosInstance.get(
         `/api/method/aviepros-fetch-guests?homeowner_address=${user?.homeowner_address}`
       );
-      console.log("Fetched guests:", res.data);
       setGuests(res?.data?.guests || []);
     } catch (error) {
       console.error("Error fetching guests:", error);
-      setGuests([]); // Set to empty array on error
+      setGuests([]);
     } finally {
-      setIsLoadingGuests(false); // Set loading state to false
+      setIsLoadingGuests(false);
     }
   };
 
@@ -118,19 +142,17 @@ const DashboardLayout = () => {
       .startOf("day")
       .add(3, "hours")
       .format("MM-DD-YYYY HH:mm:ss");
-    console.log("Current date:", currentDate);
-    setIsLoadingVisitors(true); // Set loading state to true
+    
     try {
       const res = await axiosInstance.get(
         `/api/resource/Visitor Call-In?fields=["*"]&filters=[["homeowner","=","${user?.homeowner_address}"],["termination_date",">","${currentDate}"]]`
       );
-      console.log("Fetched visitors:", res?.data);
       setDayVisitors(res?.data?.data || []);
     } catch (error) {
       console.error("Error fetching visitors:", error);
-      setDayVisitors([]); // Set to empty array on error
+      setDayVisitors([]);
     } finally {
-      setIsLoadingVisitors(false); // Set loading state to false
+      setIsLoadingVisitors(false);
     }
   };
 
@@ -141,18 +163,19 @@ const DashboardLayout = () => {
       ["vacation_start_date", "<=", currentDate],
       ["vacation_end_date", ">=", currentDate],
     ];
-    setIsLoadingVacations(true); // Set loading state to true
+
     try {
       const res = await axiosInstance.get(
-        `api/resource/Vacation Call In Entry?fields=["*"]&&filters=${JSON.stringify(filter)}`
+        `api/resource/Vacation Call In Entry?fields=["*"]&&filters=${JSON.stringify(
+          filter
+        )}`
       );
-      console.log("Fetch vacation entries", res?.data?.data);
       setVacationEntries(res?.data?.data || []);
     } catch (error) {
       console.error("Error fetching vacation entries:", error);
-      setVacationEntries([]); // Set to empty array on error
+      setVacationEntries([]);
     } finally {
-      setIsLoadingVacations(false); // Set loading state to false
+      setIsLoadingVacations(false);
     }
   };
 
@@ -165,7 +188,9 @@ const DashboardLayout = () => {
   useEffect(() => {
     if (user?.homeowner_address) {
       fetchDayVisitors();
-      fetchVacationEntries();
+      if (user?.is_101_duntreath != 1) {
+        fetchVacationEntries();
+      }
     }
   }, [user?.homeowner_address]);
 
@@ -179,10 +204,10 @@ const DashboardLayout = () => {
     setIsEditVacationModalOpen(true);
   };
 
-  const handleVisitorClick = (visitor) => { 
+  const handleVisitorClick = (visitor) => {
     setSelectedVisitor(visitor);
     setIsEditVisitorModalOpen(true);
-  }
+  };
 
   const [isEditGuestModalOpen, setIsEditGuestModalOpen] = useState(false);
   const [selectedGuest, setSelectedGuest] = useState(null);
@@ -194,7 +219,7 @@ const DashboardLayout = () => {
   const [selectedVisitor, setSelectedVisitor] = useState(null);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-0 lg:px-0 md:px-2 pt-6 pb-3 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-0 lg:px-0 md:px-2 pt-6 sm:pb-0 lg:pb-0 pb-3 space-y-6">
       <div className="">
         <h1 className="text-3xl font-medium">
           hey! Welcome to{" "}
@@ -206,7 +231,13 @@ const DashboardLayout = () => {
       </div>
 
       {/* Quick Action Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        className={`grid ${
+          user?.is_101_duntreath == 1
+            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+        } gap-4`}
+      >
         {quickActions?.map((action) => (
           <div
             key={action.title}
@@ -237,69 +268,81 @@ const DashboardLayout = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* Vacations Section */}
-        <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
-          <h2 className="text-sm font-normal text-gray-600">Vacations</h2>
-          {isLoadingVacations ? (
-            <div className="space-y-4">
-              {[...Array(2)].map((_, index) => (
-                <div key={index} className="space-y-2">
-                  <Skeleton height={20} count={2} />
-                  <Skeleton height={30} width={150} />
-                </div>
-              ))}
-            </div>
-          ) : vacationEntries.length > 0 ? (
-            <div className="space-y-4 divide-y-1 divide-[#E9EAEB]" >
-              {vacationEntries?.map((item, index) => (
-                <div key={index} className="space-y-2 pb-4 cursor-pointer" onClick={() => handleVacationClick(item)}>
-                  <p className="text-gray-500 text-sm font-normal">
-                    {item?.vacation_note}
-                  </p>
-                  <p className="text-gray-700 font-medium text-sm bg-[#F5F5F5] rounded-full py-1.5 px-2.5 inline-flex">
-                    {moment(item?.vacation_start_date).format("D MMMM")} –{" "}
-                    {moment(item?.vacation_end_date).format("D MMMM")}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="36"
-                height="36"
-                color="#d5d7da"
-                fill="none"
-              >
-                <path
-                  d="M12.5 22H6.59087C5.04549 22 3.81631 21.248 2.71266 20.1966C0.453365 18.0441 4.1628 16.324 5.57757 15.4816C7.827 14.1422 10.4865 13.7109 13 14.1878"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M15.5 6.5C15.5 8.98528 13.4853 11 11 11C8.51472 11 6.5 8.98528 6.5 6.5C6.5 4.01472 8.51472 2 11 2C13.4853 2 15.5 4.01472 15.5 6.5Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-                <path
-                  d="M18.6911 14.5777L19.395 15.9972C19.491 16.1947 19.7469 16.3843 19.9629 16.4206L21.2388 16.6343C22.0547 16.7714 22.2467 17.3682 21.6587 17.957L20.6668 18.9571C20.4989 19.1265 20.4069 19.4531 20.4589 19.687L20.7428 20.925C20.9668 21.9049 20.4509 22.284 19.591 21.7718L18.3951 21.0581C18.1791 20.929 17.8232 20.929 17.6032 21.0581L16.4073 21.7718C15.5514 22.284 15.0315 21.9009 15.2554 20.925L15.5394 19.687C15.5914 19.4531 15.4994 19.1265 15.3314 18.9571L14.3395 17.957C13.7556 17.3682 13.9436 16.7714 14.7595 16.6343L16.0353 16.4206C16.2473 16.3843 16.5033 16.1947 16.5993 15.9972L17.3032 14.5777C17.6872 13.8074 18.3111 13.8074 18.6911 14.5777Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <span className="text-gray-400 text-xs font-normal">
-                No result found
-              </span>
-            </div>
-          )}
-        </div>
+      <div
+        className={`grid ${
+          user?.is_101_duntreath == 1
+            ? "grid-cols-1 lg:grid-cols-3"
+            : "grid-cols-1 lg:grid-cols-4"
+        } gap-4`}
+      >
+        {/* Vacations Section (only if user?.is_101_duntreath != 1) */}
+        {user?.is_101_duntreath != 1 && (
+          <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
+            <h2 className="text-sm font-normal text-gray-600">Vacations</h2>
+            {isLoadingVacations ? (
+              <div className="space-y-4">
+                {[...Array(2)].map((_, index) => (
+                  <div key={index} className="space-y-2">
+                    <Skeleton height={20} count={2} />
+                    <Skeleton height={30} width={150} />
+                  </div>
+                ))}
+              </div>
+            ) : vacationEntries.length > 0 ? (
+              <div className="space-y-4 divide-y-1 divide-[#E9EAEB] max-h-[287px] overflow-y-auto">
+                {vacationEntries?.map((item, index) => (
+                  <div
+                    key={index}
+                    className="space-y-2 pb-4 cursor-pointer"
+                    onClick={() => handleVacationClick(item)}
+                  >
+                    <p className="text-gray-500 text-sm font-normal">
+                      {item?.vacation_note}
+                    </p>
+                    <p className="text-gray-700 font-medium text-sm bg-[#F5F5F5] rounded-full py-1.5 px-2.5 inline-flex">
+                      {moment(item?.vacation_start_date).format("D MMMM")} –{" "}
+                      {moment(item?.vacation_end_date).format("D MMMM")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="36"
+                  height="36"
+                  color="#d5d7da"
+                  fill="none"
+                >
+                  <path
+                    d="M12.5 22H6.59087C5.04549 22 3.81631 21.248 2.71266 20.1966C0.453365 18.0441 4.1628 16.324 5.57757 15.4816C7.827 14.1422 10.4865 13.7109 13 14.1878"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M15.5 6.5C15.5 8.98528 13.4853 11 11 11C8.51472 11 6.5 8.98528 6.5 6.5C6.5 4.01472 8.51472 2 11 2C13.4853 2 15.5 4.01472 15.5 6.5Z"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <path
+                    d="M18.6911 14.5777L19.395 15.9972C19.491 16.1947 19.7469 16.3843 19.9629 16.4206L21.2388 16.6343C22.0547 16.7714 22.2467 17.3682 21.6587 17.957L20.6668 18.9571C20.4989 19.1265 20.4069 19.4531 20.4589 19.687L20.7428 20.925C20.9668 21.9049 20.4509 22.284 19.591 21.7718L18.3951 21.0581C18.1791 20.929 17.8232 20.929 17.6032 21.0581L16.4073 21.7718C15.5514 22.284 15.0315 21.9009 15.2554 20.925L15.5394 19.687C15.5914 19.4531 15.4994 19.1265 15.3314 18.9571L14.3395 17.957C13.7556 17.3682 13.9436 16.7714 14.7595 16.6343L16.0353 16.4206C16.2473 16.3843 16.5033 16.1947 16.5993 15.9972L17.3032 14.5777C17.6872 13.8074 18.3111 13.8074 18.6911 14.5777Z"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span className="text-gray-400 text-xs font-normal">
+                  No result found
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Visitor Section */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
@@ -320,7 +363,7 @@ const DashboardLayout = () => {
               ))}
             </div>
           ) : dayVisitors?.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-[287px] overflow-y-auto">
               {dayVisitors?.map((visitor, index) => (
                 <div
                   key={index}
@@ -382,9 +425,11 @@ const DashboardLayout = () => {
           )}
         </div>
 
-        {/* Guests Section */}
+        {/* Guest/Employee Section (copy changes based on condition) */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
-          <h2 className="text-sm font-normal text-gray-600">Guest</h2>
+          <h2 className="text-sm font-normal text-gray-600">
+            {user?.is_101_duntreath == 1 ? "Employee" : "Guest"}
+          </h2>
           {isLoadingGuests ? (
             <div className="space-y-3">
               {[...Array(3)].map((_, index) => (
@@ -400,12 +445,12 @@ const DashboardLayout = () => {
               ))}
             </div>
           ) : guests?.length > 0 ? (
-            <div className="space-y-3 cursor-pointer">
+            <div className="space-y-3 max-h-[287px] overflow-y-auto">
               {guests?.map((guest, index) => (
                 <div
                   key={index}
                   onClick={() => handleGuestClick(guest)}
-                  className="bg-white p-3 rounded-lg border border-[#E9EAEB] flex justify-between items-center"
+                  className="bg-white p-3 rounded-lg border border-[#E9EAEB] flex justify-between items-center cursor-pointer"
                 >
                   <div>
                     <p className="text-[15px] font-medium">
@@ -438,7 +483,7 @@ const DashboardLayout = () => {
                   stroke-linejoin="round"
                 />
                 <path
-                  d="M15.5 6.5C15.5 8.98528 13.4853 11 11 11C8.51472 11 6.5 8.98528 6.5 6.5C6.5 4.01472 8.51472 2 11 2C13.4853 2 15.5 4.014 lega72 15.5 6.5Z"
+                  d="M15.5 6.5C15.5 8.98528 13.4853 11 11 11C8.51472 11 6.5 8.98528 6.5 6.5C6.5 4.01472 8.51472 2 11 2C13.4853 2 15.5 4.01472 15.5 6.5Z"
                   stroke="currentColor"
                   stroke-width="1.5"
                 />
@@ -460,39 +505,81 @@ const DashboardLayout = () => {
         {/* Members Section */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
           <h2 className="text-sm font-normal text-gray-600">Member</h2>
-          <div className="flex flex-col items-center justify-center h-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="36"
-              height="36"
-              color="#d5d7da"
-              fill="none"
-            >
-              <path
-                d="M12.5 22H6.59087C5.04549 22 3.81631 21.248 2.71266 20.1966C0.453365 18.0441 4.1628 16.324 5.57757 15.4816C7.827 14.1422 10.4865 13.7109 13 14.1878"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M15.5 6.5C15.5 8.98528 13.4853 11 11 11C8.51472 11 6.5 8.98528 6.5 6.5C6.5 4.01472 8.51472 2 11 2C13.4853 2 15.5 4.01472 15.5 6.5Z"
-                stroke="currentColor"
-                stroke-width="1.5"
-              />
-              <path
-                d="M18.6911 14.5777L19.395 15.9972C19.491 16.1947 19.7469 16.3843 19.9629 16.4206L21.2388 16.6343C22.0547 16.7714 22.2467 17.3682 21.6587 17.957L20.6668 18.9571C20.4989 19.1265 20.4069 19.4531 20.4589 19.687L20.7428 20.925C20.9668 21.9049 20.4509 22.284 19.591 21.7718L18.3951 21.0581C18.1791 20.929 17.8232 20.929 17.6032 21.0581L16.4073 21.7718C15.5514 22.284 15.0315 21.9009 15.2554 20.925L15.5394 19.687C15.5914 19.4531 15.4994 19.1265 15.3314 18.9571L14.3395 17.957C13.7556 17.3682 13.9436 16.7714 14.7595 16.6343L16.0353 16.4206C16.2473 16.3843 16.5033 16.1947 16.5993 15.9972L17.3032 14.5777C17.6872 13.8074 18.3111 13.8074 18.6911 14.5777Z"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-            <span className="text-gray-400 text-xs font-normal">
-              No result found
-            </span>
-          </div>
+          {isLoadingVisitors ? (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-3 rounded-lg border border-[#E9EAEB] flex justify-between items-center"
+                >
+                  <div className="space-y-2">
+                    <Skeleton height={20} width={120} />
+                    <Skeleton height={16} width={80} />
+                  </div>
+                  <Skeleton height={30} width={100} />
+                </div>
+              ))}
+            </div>
+          ) : members?.length > 0 ? (
+            <div className="space-y-3 max-h-[287px] overflow-y-auto">
+              {members?.map((visitor, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-3 rounded-lg cursor-pointer border border-[#E9EAEB] flex justify-between items-center"
+                >
+                  <div>
+                    <p className="text-sm font-medium">
+                      {visitor?.visitor_name}
+                    </p>
+                    <p className="text-gray-500 text-xs">
+                      {visitor?.call_in_type}
+                    </p>
+                  </div>
+                  <span
+                    className={`font-medium text-sm rounded-full py-1 px-3 capitalize ${getPillClasses(
+                      visitor.category
+                    )}`}
+                  >
+                    {visitor.category}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="36"
+                height="36"
+                color="#d5d7da"
+                fill="none"
+              >
+                <path
+                  d="M12.5 22H6.59087C5.04549 22 3.81631 21.248 2.71266 20.1966C0.453365 18.0441 4.1628 16.324 5.57757 15.4816C7.827 14.1422 10.4865 13.7109 13 14.1878"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M15.5 6.5C15.5 8.98528 13.4853 11 11 11C8.51472 11 6.5 8.98528 6.5 6.5C6.5 4.01472 8.51472 2 11 2C13.4853 2 15.5 4.01472 15.5 6.5Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M18.6911 14.5777L19.395 15.9972C19.491 16.1947 19.7469 16.3843 19.9629 16.4206L21.2388 16.6343C22.0547 16.7714 22.2467 17.3682 21.6587 17.957L20.6668 18.9571C20.4989 19.1265 20.4069 19.4531 20.4589 19.687L20.7428 20.925C20.9668 21.9049 20.4509 22.284 19.591 21.7718L18.3951 21.0581C18.1791 20.929 17.8232 20.929 17.6032 21.0581L16.4073 21.7718C15.5514 22.284 15.0315 21.9009 15.2554 20.925L15.5394 19.687C15.5914 19.4531 15.4994 19.1265 15.3314 18.9571L14.3395 17.957C13.7556 17.3682 13.9436 16.7714 14.7595 16.6343L16.0353 16.4206C16.2473 16.3843 16.5033 16.1947 16.5993 15.9972L17.3032 14.5777C17.6872 13.8074 18.3111 13.8074 18.6911 14.5777Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span className="text-gray-400 text-xs font-normal">
+                No result found
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -521,17 +608,17 @@ const DashboardLayout = () => {
         setOpen={closeVacationAlertModal}
         onUpdate={fetchVacationEntries}
       />
-      <EditVacationAlertModal 
-      open={isEditVacationModalOpen}
-      setOpen={setIsEditVacationModalOpen}
-      onUpdate={fetchVacationEntries}
-      vacation={selectedVacation}
+      <EditVacationAlertModal
+        open={isEditVacationModalOpen}
+        setOpen={setIsEditVacationModalOpen}
+        onUpdate={fetchVacationEntries}
+        vacation={selectedVacation}
       />
-      <EditDayVisitorModal 
-      open={isEditVisitorModalOpen}
-      setOpen={setIsEditVisitorModalOpen}
-      onUpdate={fetchDayVisitors}
-      visitor={selectedVisitor}
+      <EditDayVisitorModal
+        open={isEditVisitorModalOpen}
+        setOpen={setIsEditVisitorModalOpen}
+        onUpdate={fetchDayVisitors}
+        visitor={selectedVisitor}
       />
     </div>
   );

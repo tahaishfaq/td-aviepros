@@ -10,6 +10,9 @@ import Settings from "./pages/Settings";
 
 import Cars from "./pages/Cars";
 import MembersLayout from "./pages/MembersLayout";
+import InviteManagers from "./pages/InviteManagers";
+import ResetPassword from "./pages/ResetPassword";
+import ForgetPassword from "./pages/ForgetPassword";
 
 
 function App() {
@@ -24,7 +27,10 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/cars" element={<Cars />} />
             <Route path="/members" element={<MembersLayout />} />
+            <Route path="/managers" element={<InviteManagers />} />
           </Route>
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/forget-password" element={<ForgetPassword />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

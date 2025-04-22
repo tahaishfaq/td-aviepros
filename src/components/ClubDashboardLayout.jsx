@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import AddGuestModal from "./clubmember-pop-ups/AddGuestModal";
-import AddVisitorCallInModal from "./clubmember-pop-ups/AddVisitorCallInModal"; // Import the Visitor Call-In modal
+import AddVisitorCallInModal from "./clubmember-pop-ups/AddVisitorCallInModal";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import moment from "moment";
@@ -22,7 +22,7 @@ const quickActions = [
 const ClubDashboardLayout = () => {
   const { user } = useAuth();
   const [isAddGuestModalOpen, setIsAddGuestModalOpen] = useState(false);
-  const [isAddVisitorModalOpen, setIsAddVisitorModalOpen] = useState(false); // State for Visitor Call-In modal
+  const [isAddVisitorModalOpen, setIsAddVisitorModalOpen] = useState(false);
   const [guestList, setGuestList] = useState([]);
   const [dayVisitors, setDayVisitors] = useState([]);
   const [secondaryMembers, setSecondaryMembers] = useState([]);
@@ -207,7 +207,6 @@ const ClubDashboardLayout = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Guest List Section */}
           <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
             <h2 className="text-sm font-normal text-gray-600">Guest List</h2>
             {isLoadingGuests ? (

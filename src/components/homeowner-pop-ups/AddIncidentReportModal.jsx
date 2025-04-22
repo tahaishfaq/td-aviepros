@@ -18,16 +18,7 @@ export default function AddIncidentReportModal({ open, setOpen, onUpdate }) {
   const { user } = useAuth();
 
   const reportTypes = [
-    "Delivery",
-    "Delivery Issue/Denied",
-    "Goshen Bridge",
-    "Goshen Gate Access Denied",
     "Homeowner Complaint",
-    "Main Gate Access Denied",
-    "Not on Guest List",
-    "Other",
-    "Police",
-    "South Creek Bridges",
     "Speeding",
     "Trespassing",
   ];

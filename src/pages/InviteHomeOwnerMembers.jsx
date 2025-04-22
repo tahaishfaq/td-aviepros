@@ -15,6 +15,8 @@ const InviteHomeOwnerMembers = () => {
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [invitingMember, setInvitingMember] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [memberToRevoke, setMemberToRevoke] = useState(null);
 
   // Fetch members based on the active tab
   const fetchMembers = async () => {
@@ -34,7 +36,7 @@ const InviteHomeOwnerMembers = () => {
     } catch (error) {
       console.error("Error fetching members:", error);
       setMembers([]);
-      alert("Failed to fetch members. Please try again.");
+      toast.error("Failed to fetch members. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -53,21 +55,31 @@ const InviteHomeOwnerMembers = () => {
         )
       );
 
-      await axiosInstance
-        .post(
-          "/api/method/merak_hotel_security.aviepros.aviepros_invite_secondary_member",
-          {
-            homeowner_address: user?.homeowner_address,
-            member_id: memberId,
-          }
-        )
-        .then((res) => {
-          console.log("Member invited successfully:", res.data);
-          toast.success("Member invited successfully");
-        });
+      const res = await axiosInstance.post(
+        "/api/method/merak_hotel_security.aviepros.aviepros_invite_secondary_member",
+        {
+          homeowner_address: user?.homeowner_address,
+          member_id: memberId,
+        }
+      );
+
+      // Check API response status
+      if (res.data.status === "success") {
+        console.log("Member invited successfully:", res.data);
+        toast.success(res.data.message || "Member invited successfully");
+      } else {
+        console.error("API error:", res.data.message);
+        setMembers((prevMembers) =>
+          prevMembers.map((member) =>
+            member.name === memberId
+              ? { ...member, access_status: "Not Invited" }
+              : member
+          )
+        );
+        toast.error(res.data.message || "Failed to invite member.");
+      }
     } catch (error) {
       console.error("Error inviting member:", error);
-      // Revert the optimistic update on error
       setMembers((prevMembers) =>
         prevMembers.map((member) =>
           member.name === memberId
@@ -78,6 +90,77 @@ const InviteHomeOwnerMembers = () => {
       toast.error("Failed to invite member. Please try again.");
     } finally {
       setInvitingMember(null);
+    }
+  };
+
+  // Revoke access for a member
+  const revokeMember = async (memberId) => {
+    setInvitingMember(memberId);
+    try {
+      // Optimistically update the UI
+      setMembers((prevMembers) =>
+        prevMembers.map((member) =>
+          member.name === memberId
+            ? { ...member, access_status: "Revoked" }
+            : member
+        )
+      );
+
+      const res = await axiosInstance.post(
+        "/api/method/merak_hotel_security.aviepros.aviepros_revoke_secondary_member",
+        {
+          homeowner_address: user?.homeowner_address,
+          member_id: memberId,
+        }
+      );
+
+      console.log("Revoke response:", res.data);
+      // if (res.data.message.status === "success") {
+      //   console.log("Member access revoked successfully:", res.data);
+      //   toast.success(res.data.message.message || "Access revoked successfully");
+      // } else {
+      //   console.error("API error:", res.data.message);
+      //   setMembers((prevMembers) =>
+      //     prevMembers.map((member) =>
+      //       member.name === memberId
+      //         ? { ...member, access_status: "Invited" }
+      //         : member
+      //     )
+      //   );
+      //   toast.error(res.data.message || "Failed to revoke access.");
+      // }
+    } catch (error) {
+      console.error("Error revoking member access:", error);
+      setMembers((prevMembers) =>
+        prevMembers.map((member) =>
+          member.name === memberId
+            ? { ...member, access_status: "Invited" }
+            : member
+        )
+      );
+      toast.error("Failed to revoke access. Please try again.");
+    } finally {
+      setInvitingMember(null);
+      setShowModal(false); // Close the modal after revocation
+    }
+  };
+
+  // Open the confirmation modal
+  const openRevokeModal = (member) => {
+    setMemberToRevoke(member);
+    setShowModal(true);
+  };
+
+  // Close the modal
+  const closeModal = () => {
+    setShowModal(false);
+    setMemberToRevoke(null);
+  };
+
+  // Confirm revocation
+  const confirmRevoke = () => {
+    if (memberToRevoke) {
+      revokeMember(memberToRevoke.name);
     }
   };
 
@@ -99,6 +182,60 @@ const InviteHomeOwnerMembers = () => {
   return (
     <>
       <Toaster richColors />
+
+      {/* Confirmation Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#252B377A] flex items-center justify-center z-50"
+            onClick={closeModal}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Confirm Revoke Access
+              </h3>
+              <p className="text-sm text-gray-600 mb-6">
+                Are you sure you want to revoke access for{" "}
+                <span className="font-medium">
+                  {memberToRevoke?.owner_name}
+                </span>
+                ?
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={closeModal}
+                  className="px-4 py-2 rounded-md text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmRevoke}
+                  disabled={invitingMember === memberToRevoke?.name}
+                  className={`px-4 py-2 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors duration-200 ${
+                    invitingMember === memberToRevoke?.name
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  {invitingMember === memberToRevoke?.name
+                    ? "Revoking..."
+                    : "Yes"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="max-w-[545px] mx-auto px-4 sm:px-0 lg:px-0 md:px-2 pt-6 pb-3 space-y-8">
         <div className="flex items-end gap-x-2.5">
@@ -151,7 +288,7 @@ const InviteHomeOwnerMembers = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="divide-y divide-[#E9EAEB] "
+                className="divide-y divide-[#E9EAEB]"
               >
                 {[...Array(3)].map((_, index) => (
                   <div
@@ -173,7 +310,7 @@ const InviteHomeOwnerMembers = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="divide-y divide-[#E9EAEB] "
+                className="divide-y divide-[#E9EAEB]"
               >
                 {filteredMembers?.map((member, index) => (
                   <motion.div
@@ -191,33 +328,51 @@ const InviteHomeOwnerMembers = () => {
                         {member.contact ? member.contact : "---"}
                       </p>
                     </div>
-                    {member.access_status === "Not Invited" ? (
-                      <button
-                        onClick={() => inviteMember(member.name)}
-                        disabled={invitingMember === member.name}
-                        className={`px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors duration-200 ${
-                          invitingMember === member.name
-                            ? "opacity-50 cursor-not-allowed"
-                            : "cursor-pointer rounded-md"
-                        }`}
-                      >
-                        {invitingMember === member.name
-                          ? "Inviting..."
-                          : "Invite"}
-                      </button>
-                    ) : (
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          member.access_status === "Invited"
-                            ? "bg-green-100 text-green-800"
-                            : member.access_status === "Revoked"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-gray-100 text-gray-800" // Fallback for unexpected status
-                        }`}
-                      >
-                        {member.access_status}
-                      </span>
-                    )}
+                    {/* Conditional rendering based on member_type */}
+                    {member.member_type !== "Non-Resident" ? (
+                      member.access_status === "Not Invited" ? (
+                        <button
+                          onClick={() => inviteMember(member.name)}
+                          disabled={invitingMember === member.name}
+                          className={`px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors duration-200 ${
+                            invitingMember === member.name
+                              ? "opacity-50 cursor-not-allowed"
+                              : "cursor-pointer rounded-md"
+                          }`}
+                        >
+                          {invitingMember === member.name
+                            ? "Inviting..."
+                            : "Invite"}
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              member.access_status === "Invited"
+                                ? "bg-green-100 text-green-800"
+                                : member.access_status === "Revoked"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {member.access_status}
+                          </span>
+                          {member.access_status === "Invited" && (
+                            <button
+                              onClick={() => openRevokeModal(member)}
+                              disabled={invitingMember === member.name}
+                              className={`px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200 transition-colors duration-200 ${
+                                invitingMember === member.name
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : "cursor-pointer rounded-md"
+                              }`}
+                            >
+                              Revoke
+                            </button>
+                          )}
+                        </div>
+                      )
+                    ) : null}
                   </motion.div>
                 ))}
               </motion.div>
