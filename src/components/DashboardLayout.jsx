@@ -502,8 +502,8 @@ const DashboardLayout = () => {
           )}
         </div>
 
-        {/* Members Section */}
-        <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
+ 
+        {/* <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">
           <h2 className="text-sm font-normal text-gray-600">Member</h2>
           {isLoadingVisitors ? (
             <div className="space-y-3">
@@ -580,7 +580,7 @@ const DashboardLayout = () => {
               </span>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
 
       <AddGuestModal

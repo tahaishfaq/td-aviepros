@@ -57,9 +57,9 @@ const InviteClubMembers = () => {
       );
 
       // Check API response status
-      if (res.data.status === "success") {
+      if (res.data.message.status === "success") {
         console.log("Club member invited successfully:", res.data);
-        toast.success(res.data.message || "Member invited successfully");
+        toast.success("Member invited successfully");
       } else {
         // Handle API error response
         console.error("API error:", res.data.message);
@@ -70,7 +70,7 @@ const InviteClubMembers = () => {
               : member
           )
         );
-        toast.error(res.data.message || "Failed to invite member.");
+        toast.error("Failed to invite member.");
       }
     } catch (error) {
       // Handle network errors or unexpected issues
@@ -112,7 +112,7 @@ const InviteClubMembers = () => {
       // Check API response status
       if (res.data.message.status === "success") {
         console.log("Club member access revoked successfully:", res.data);
-        toast.success(res.data.message.message || "Access revoked successfully");
+        toast.success("Access revoked successfully");
       } else {
         console.error("API error:", res.data.message);
         setMembers((prevMembers) =>
@@ -122,7 +122,7 @@ const InviteClubMembers = () => {
               : member
           )
         );
-        toast.error(res.data.message || "Failed to revoke access.");
+        toast.error("Failed to revoke access.");
       }
     } catch (error) {
       console.error("Error revoking club member access:", error);

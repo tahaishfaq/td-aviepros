@@ -64,9 +64,9 @@ const InviteHomeOwnerMembers = () => {
       );
 
       // Check API response status
-      if (res.data.status === "success") {
+      if (res.data.message.status === "success") {
         console.log("Member invited successfully:", res.data);
-        toast.success(res.data.message || "Member invited successfully");
+        toast.success("Member invited successfully");
       } else {
         console.error("API error:", res.data.message);
         setMembers((prevMembers) =>
@@ -76,7 +76,7 @@ const InviteHomeOwnerMembers = () => {
               : member
           )
         );
-        toast.error(res.data.message || "Failed to invite member.");
+        toast.error("Failed to invite member.");
       }
     } catch (error) {
       console.error("Error inviting member:", error);
@@ -115,20 +115,20 @@ const InviteHomeOwnerMembers = () => {
       );
 
       console.log("Revoke response:", res.data);
-      // if (res.data.message.status === "success") {
-      //   console.log("Member access revoked successfully:", res.data);
-      //   toast.success(res.data.message.message || "Access revoked successfully");
-      // } else {
-      //   console.error("API error:", res.data.message);
-      //   setMembers((prevMembers) =>
-      //     prevMembers.map((member) =>
-      //       member.name === memberId
-      //         ? { ...member, access_status: "Invited" }
-      //         : member
-      //     )
-      //   );
-      //   toast.error(res.data.message || "Failed to revoke access.");
-      // }
+      if (res.data.message.status === "success") {
+        console.log("Member access revoked successfully:", res.data);
+        toast.success("Access revoked successfully");
+      } else {
+        console.error("API error:", res.data.message);
+        setMembers((prevMembers) =>
+          prevMembers.map((member) =>
+            member.name === memberId
+              ? { ...member, access_status: "Invited" }
+              : member
+          )
+        );
+        toast.error("Failed to revoke access.");
+      }
     } catch (error) {
       console.error("Error revoking member access:", error);
       setMembers((prevMembers) =>
