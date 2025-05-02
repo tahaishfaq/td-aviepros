@@ -36,7 +36,7 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
           .then((res) => {
             console.log("Guest added successfully:", res.data);
             toast.success("Guest added successfully");
-            onUpdate()
+            onUpdate();
           });
       } catch (error) {
         console.error("Error adding guest:", error);
@@ -82,7 +82,9 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
                       as="h3"
                       className="text-lg font-medium leading-6"
                     >
-                      Invite Guest
+                      {user?.is_101_duntreath === 1
+                        ? "Invite Employee"
+                        : "Invite Guest"}
                     </DialogTitle>
                     <button
                       type="button"
@@ -96,8 +98,10 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
                   {/* Modal Description */}
                   <div className="font-light max-w-xs">
                     <p className="text-sm text-gray-500">
-                      Enter guest details to notify security and ensure a
-                      seamless check-in experience.
+                      Enter{" "}
+                      {user?.is_101_duntreath === 1 ? "employee" : "guest"}{" "}
+                      details to notify security and ensure a seamless check-in
+                      experience.
                     </p>
                   </div>
 
@@ -165,7 +169,11 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
                         className="w-full rounded-lg bg-green-600 px-4 py-3 text-sm font-medium text-white outline-none cursor-pointer"
                         disabled={formik.isSubmitting}
                       >
-                        {formik.isSubmitting ? "Adding..." : "Add Guest"}
+                        {formik.isSubmitting
+                          ? "Adding..."
+                          : user?.is_101_duntreath === 1
+                          ? "Add Employee"
+                          : "Add Guest"}
                       </button>
                     </div>
                   </form>
