@@ -244,7 +244,7 @@ export default function EditDayVisitorModal({
                     </div>
 
                     {/* Goshen Gate (Checkbox) */}
-                    <div className="flex items-center space-x-2">
+                    {/* <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
                         id="goshen_gate"
@@ -260,10 +260,10 @@ export default function EditDayVisitorModal({
                       >
                         Goshen Gate
                       </label>
-                    </div>
+                    </div> */}
 
                     {/* Termination Date (Datetime Picker) */}
-                    <div className="border border-[#00000014] rounded-lg py-2 px-4">
+                    {/* <div className="border border-[#00000014] rounded-lg py-2 px-4">
                       <label
                         htmlFor="termination_date"
                         className="block text-sm font-light text-gray-500"
@@ -282,7 +282,7 @@ export default function EditDayVisitorModal({
                           }}
                         />
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Buttons */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-2 grid-cols-1 gap-4">

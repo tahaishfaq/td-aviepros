@@ -235,15 +235,15 @@ const Login = () => {
       <Toaster richColors />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 lg:px-0 md:px-2 sm:px-2">
         <div className="w-full max-w-md space-y-6">
-          <div className="flex justify-center">
-            <img src={logo} alt="Logo" className="size-20" />
+          <div className="flex justify-center ">
+            <img src={logo} alt="Logo" className="w-64 object-contain" />
           </div>
           <div>
             <h1 className="text-2xl font-medium text-center text-gray-800">
-              Let's Get to Know You!
+            Welcome to Traffic Dash!
             </h1>
             <p className="text-center font-light">
-              Please provide your details to set up your account.
+            Please enter your login details to sign in.
             </p>
           </div>
 

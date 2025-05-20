@@ -12,6 +12,7 @@ import addteam from "../assets/icons/add-team.png";
 import arrow from "../assets/icons/arrow.png";
 import trash from "../assets/icons/delete.png";
 import { toast, Toaster } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const quickActions = [
   { title: "Guest List", icon: usertime },
@@ -28,6 +29,7 @@ const ClubDashboardLayout = () => {
   const [secondaryMembers, setSecondaryMembers] = useState([]);
   const [isLoadingGuests, setIsLoadingGuests] = useState(true);
   const [isLoadingVisitors, setIsLoadingVisitors] = useState(true);
+  const navigate = useNavigate();
 
   const getPillClasses = (status) => {
     const statusLower = status?.toLowerCase();
@@ -128,6 +130,8 @@ const ClubDashboardLayout = () => {
       setIsAddGuestModalOpen(true);
     } else if (title === "Visitor Call") {
       setIsAddVisitorModalOpen(true);
+    } else if (title === "Secondary Member") {
+      navigate("/members");
     }
   };
 

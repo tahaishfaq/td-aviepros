@@ -160,6 +160,12 @@ const HomeOwnerCars = () => {
               <div className="space-y-4 px-4 pb-4">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-700 font-light">
+                    Owner Name
+                  </span>
+                  <span className="text-sm font-normal">{car?.owner_name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-700 font-light">
                     Model
                   </span>
                   <span className="text-sm font-normal">

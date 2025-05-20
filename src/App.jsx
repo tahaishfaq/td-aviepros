@@ -13,6 +13,7 @@ import MembersLayout from "./pages/MembersLayout";
 import InviteManagers from "./pages/InviteManagers";
 import ResetPassword from "./pages/ResetPassword";
 import ForgetPassword from "./pages/ForgetPassword";
+import { LandingPage } from "./pages/LandingPage";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+        <Route path="/landing" element={<LandingPage />} />
           <Route path="/" element={<Login />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />

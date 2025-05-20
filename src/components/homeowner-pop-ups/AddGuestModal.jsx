@@ -1,4 +1,3 @@
-// src/components/GuestModal.jsx
 import {
   Dialog,
   DialogPanel,
@@ -12,22 +11,32 @@ import { useFormik } from "formik";
 import axiosInstance from "../../utils/axiosInstance";
 import { useAuth } from "../../context/AuthContext";
 import { toast, Toaster } from "sonner";
+import * as Yup from "yup"; // Import Yup for validation
 
 export default function AddGuestModal({ open, setOpen, onUpdate }) {
   const { user } = useAuth();
+
+  // Define validation schema with Yup
+  const validationSchema = Yup.object({
+    firstName: Yup.string()
+      .required("First name is required")
+      .matches(/^\S*$/, "First name cannot contain spaces"),
+    lastName: Yup.string()
+      .required("Last name is required")
+      .matches(/^\S*$/, "Last name cannot contain spaces"),
+  });
 
   const formik = useFormik({
     initialValues: {
       firstName: "",
       lastName: "",
-      relationship: "",
     },
+    validationSchema, // Add validation schema
     onSubmit: async (values, { setSubmitting }) => {
       const json = {
         home_address_id: user?.homeowner_address,
         first_name: values.firstName,
         last_name: values.lastName,
-        visiting_as: values.relationship,
       };
       console.log("Form values:", json);
       try {
@@ -40,6 +49,10 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
           });
       } catch (error) {
         console.error("Error adding guest:", error);
+        const errorMessage =
+          error.response?.data?.exception?.split(": ")?.[1] ||
+          "Failed to add guest. Please try again.";
+        toast.error(errorMessage);
       } finally {
         setSubmitting(false);
         formik.resetForm();
@@ -47,6 +60,13 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
       }
     },
   });
+
+  // Custom onChange handler to prevent spaces
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    // Replace any spaces with an empty string
+    formik.setFieldValue(name, value.replace(/\s/g, ""));
+  };
 
   return (
     <>
@@ -120,10 +140,15 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
                           id="firstName"
                           name="firstName"
                           className="text-sm outline-none border-none w-full bg-transparent"
-                          onChange={formik.handleChange}
+                          onChange={handleInputChange} // Use custom handler
                           onBlur={formik.handleBlur}
                           value={formik.values.firstName}
                         />
+                        {formik.touched.firstName && formik.errors.firstName && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {formik.errors.firstName}
+                          </p>
+                        )}
                       </div>
 
                       <div className="border border-[#00000014] rounded-lg py-2 px-4">
@@ -138,29 +163,16 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
                           id="lastName"
                           name="lastName"
                           className="text-sm outline-none border-none w-full bg-transparent"
-                          onChange={formik.handleChange}
+                          onChange={handleInputChange} // Use custom handler
                           onBlur={formik.handleBlur}
                           value={formik.values.lastName}
                         />
+                        {formik.touched.lastName && formik.errors.lastName && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {formik.errors.lastName}
+                          </p>
+                        )}
                       </div>
-                    </div>
-
-                    <div className="border border-[#00000014] rounded-lg py-2 px-4">
-                      <label
-                        htmlFor="relationship"
-                        className="block text-sm font-light text-gray-500"
-                      >
-                        Relationship
-                      </label>
-                      <input
-                        type="text"
-                        id="relationship"
-                        name="relationship"
-                        className="text-sm outline-none border-none w-full bg-transparent"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.relationship}
-                      />
                     </div>
 
                     <div className="">

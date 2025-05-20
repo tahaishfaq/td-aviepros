@@ -54,7 +54,7 @@ export default function Navbar() {
       ),
     },
     {
-      label: user?.is_101_duntreath == 1 ? "Manager" : "Member",
+      label: user?.is_101_duntreath == 1 ? "Managers" : "Members",
       link: user?.is_101_duntreath == 1 ? "/managers" : "/members",
       icon: (
         <svg
@@ -111,7 +111,7 @@ export default function Navbar() {
       ),
     },
     {
-      label: "Car",
+      label: "Cars",
       link: "/cars",
       icon: (
         <svg
@@ -229,8 +229,14 @@ export default function Navbar() {
               </div>
             </div>
           </div>
+
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {/* Profile dropdown */}
+            <span className="flex items-center justify-center px-2.5 py-1.5 rounded-full bg-green-600 text-white text-sm font-medium">
+              {user?.homeowner_address &&
+                `HomeAddress: ${user.homeowner_address} `}
+              {user?.club_member && `ClubMember: ${user.club_member}`}
+            </span>
+
             <Menu as="div" className="relative ml-3">
               <div>
                 <MenuButton className="relative flex rounded-full cursor-pointer bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
@@ -243,7 +249,7 @@ export default function Navbar() {
                         ? window.$BackEndURL + user?.user_image
                         : "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                     }
-                    className="size-8 rounded-full object-cover object-center"
+                    className="size-9 rounded-full object-cover object-center"
                   />
                 </MenuButton>
               </div>

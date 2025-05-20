@@ -17,7 +17,6 @@ import { DateRange } from "react-date-range"; // Import react-date-range
 import "react-date-range/dist/styles.css"; // Main style file
 import "react-date-range/dist/theme/default.css"; // Theme CSS file
 
-
 export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
   const { user } = useAuth();
   const [dateRange, setDateRange] = useState([
@@ -132,8 +131,8 @@ export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
                   {/* Description */}
                   <div className="font-light max-w-xs">
                     <p className="text-sm text-gray-500">
-                      Provide details about your vacation so your Security Team,
-                      can ensure the security of your home while you're away.
+                      Let your Security Team know when you'll be away so they
+                      can help keep your home safe.
                     </p>
                   </div>
 
@@ -175,7 +174,8 @@ export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
                           onClick={() => setShowPicker(!showPicker)}
                           className="text-sm outline-none border-none w-full bg-transparent cursor-pointer"
                         />
-                        {!showPicker && <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                        {!showPicker && (
+                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               className="h-5 w-5 text-gray-400"
@@ -190,7 +190,8 @@ export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                               />
                             </svg>
-                          </div>}
+                          </div>
+                        )}
                       </div>
                       {showPicker && (
                         <div className="mt-2">

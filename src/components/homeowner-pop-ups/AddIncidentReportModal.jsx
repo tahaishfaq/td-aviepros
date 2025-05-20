@@ -19,14 +19,14 @@ export default function AddIncidentReportModal({ open, setOpen, onUpdate }) {
 
   const reportTypes = [
     "Homeowner Complaint",
-    "Speeding",
-    "Trespassing",
+    // "Speeding",
+    // "Trespassing",
   ];
 
   const formik = useFormik({
     initialValues: {
       incident_name: "",
-      incident_type: "Delivery", // Default value as seen in the first image (Violence, but updated to match the new list)
+      incident_type: "Homeowner Complaint", // Default value as seen in the first image (Violence, but updated to match the new list)
       incident_description: "",
       // submitted_by, submitted_at, and officer_name will be handled automatically
     },
@@ -135,7 +135,7 @@ export default function AddIncidentReportModal({ open, setOpen, onUpdate }) {
                         htmlFor="incident_name"
                         className="block text-sm font-light text-gray-500"
                       >
-                        Report
+                        Subject
                       </label>
                       <input
                         type="text"

@@ -260,20 +260,24 @@ const InviteHomeOwnerMembers = () => {
               />
             </svg>
           </button>
-          <h1 className="text-2xl font-normal">Member</h1>
+          <h1 className="text-2xl font-normal">Members</h1>
         </div>
 
         {/* Tabs */}
         <div className="grid sm:grid-cols-3 lg:grid-cols-3 grid-cols-3 relative">
-          {["Secondary", "Minor", "Non-Resident"].map((tab) => (
+          {[
+            { value: "Secondary", label: "Secondary Residents" },
+            { value: "Minor", label: "Minors" },
+            { value: "Non-Resident", label: "Non-Resident" },
+          ].map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => setActiveTab(tab.value)}
               className={`relative sm:px-4 lg:px-4 px-2 py-2 rounded-lg font-medium text-sm transition-all duration-300 ease-in-out cursor-pointer transform hover:scale-105 ${
-                activeTab === tab ? "bg-green-600 text-white scale-105" : ""
+                activeTab === tab.value ? "bg-green-600 text-white scale-105" : ""
               }`}
             >
-              {tab}
+              {tab.label}
             </button>
           ))}
         </div>

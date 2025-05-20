@@ -157,7 +157,7 @@ export default function EditGuestModal({ open, setOpen, guest, onUpdate }) {
                       </div>
                     </div>
 
-                    <div className="bg-[#F5F5F5] rounded-lg py-2 px-4">
+                    {/* <div className="bg-[#F5F5F5] rounded-lg py-2 px-4">
                       <label
                         htmlFor="relationship"
                         className="block text-sm font-light text-gray-500"
@@ -173,7 +173,7 @@ export default function EditGuestModal({ open, setOpen, guest, onUpdate }) {
                         onBlur={formik.handleBlur}
                         value={formik.values.relationship}
                       />
-                    </div>
+                    </div> */}
 
                     <div className="flex items-center gap-x-3 pt-2">
                       <button
