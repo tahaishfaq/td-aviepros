@@ -29,7 +29,7 @@ const DashboardLayout = () => {
     user?.is_101_duntreath == 1
       ? [
           {
-            title: "Day Visitor",
+            title: "Report a Visitor",
             icon: location_user,
           },
           {
@@ -43,7 +43,7 @@ const DashboardLayout = () => {
         ]
       : [
           {
-            title: "Day Visitor",
+            title: "Report a Visitor",
             icon: location_user,
           },
           {
@@ -83,7 +83,7 @@ const DashboardLayout = () => {
   // Handle card clicks to open the corresponding modal
   const handleCardClick = (title) => {
     switch (title) {
-      case "Day Visitor":
+      case "Report a Visitor":
         setIsDayVisitorModalOpen(true);
         break;
       case "Add Guest":

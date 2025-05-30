@@ -232,9 +232,9 @@ export default function Navbar() {
 
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <span className="flex items-center justify-center px-2.5 py-1.5 rounded-full bg-green-600 text-white text-sm font-medium">
-              {user?.homeowner_address &&
-                `HomeAddress: ${user.homeowner_address} `}
-              {user?.club_member && `ClubMember: ${user.club_member}`}
+              {user?.homeaddress &&
+                `HomeAddress: ${user.homeaddress} `}
+              {user?.club_member_id && `ClubMember Id: ${user.club_member_id}`}
             </span>
 
             <Menu as="div" className="relative ml-3">

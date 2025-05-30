@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 
 const quickActions = [
   { title: "Guest List", icon: usertime },
-  { title: "Visitor Call", icon: addteam },
+  { title: "Report a Visitor", icon: addteam },
   { title: "Secondary Member", icon: usergroup },
 ];
 
@@ -128,7 +128,7 @@ const ClubDashboardLayout = () => {
   const handleCardClick = (title) => {
     if (title === "Guest List") {
       setIsAddGuestModalOpen(true);
-    } else if (title === "Visitor Call") {
+    } else if (title === "Report a Visitor") {
       setIsAddVisitorModalOpen(true);
     } else if (title === "Secondary Member") {
       navigate("/members");

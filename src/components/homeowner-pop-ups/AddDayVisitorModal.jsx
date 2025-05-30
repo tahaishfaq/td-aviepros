@@ -148,7 +148,9 @@ export default function AddDayVisitorModal({ open, setOpen, onUpdate }) {
                           htmlFor="first_name"
                           className="block text-sm font-light text-gray-500"
                         >
-                          First Name
+                          {formik.values.category == "Day Visitor"
+                            ? "First Name"
+                            : "Name"}
                         </label>
                         <input
                           type="text"
@@ -161,23 +163,25 @@ export default function AddDayVisitorModal({ open, setOpen, onUpdate }) {
                         />
                       </div>
 
-                      <div className="border border-[#00000014] rounded-lg py-2 px-4">
-                        <label
-                          htmlFor="last_name"
-                          className="block text-sm font-light text-gray-500"
-                        >
-                          Last Name
-                        </label>
-                        <input
-                          type="text"
-                          id="last_name"
-                          name="last_name"
-                          className="text-sm outline-none border-none w-full bg-transparent"
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          value={formik.values.last_name}
-                        />
-                      </div>
+                      {formik.values.category == "Day Visitor" && (
+                        <div className="border border-[#00000014] rounded-lg py-2 px-4">
+                          <label
+                            htmlFor="last_name"
+                            className="block text-sm font-light text-gray-500"
+                          >
+                            Last Name
+                          </label>
+                          <input
+                            type="text"
+                            id="last_name"
+                            name="last_name"
+                            className="text-sm outline-none border-none w-full bg-transparent"
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            value={formik.values.last_name}
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Category (Select type) */}
@@ -224,26 +228,28 @@ export default function AddDayVisitorModal({ open, setOpen, onUpdate }) {
                     </div> */}
 
                     {/* Termination Date (Datetime Picker) */}
-                    {/* <div className="border border-[#00000014] rounded-lg py-2 px-4">
-                      <label
-                        htmlFor="termination_date"
-                        className="block text-sm font-light text-gray-500"
-                      >
-                        Termination Date
-                      </label>
-                      <div className="w-full">
-                        <Datetime
-                          value={selectedDate}
-                          onChange={(date) => setSelectedDate(date)}
-                          dateFormat="YYYY-MM-DD"
-                          timeFormat="HH:mm:ss"
-                          closeOnSelect
-                          inputProps={{
-                            className: "w-full text-sm outline-none",
-                          }}
-                        />
+                    {formik.values.category == "Contractor" && (
+                      <div className="border border-[#00000014] rounded-lg py-2 px-4">
+                        <label
+                          htmlFor="termination_date"
+                          className="block text-sm font-light text-gray-500"
+                        >
+                          Termination Date
+                        </label>
+                        <div className="w-full">
+                          <Datetime
+                            value={selectedDate}
+                            onChange={(date) => setSelectedDate(date)}
+                            dateFormat="YYYY-MM-DD"
+                            timeFormat="HH:mm:ss"
+                            closeOnSelect
+                            inputProps={{
+                              className: "w-full text-sm outline-none",
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div> */}
+                    )}
 
                     {/* Submit Button */}
                     <div>

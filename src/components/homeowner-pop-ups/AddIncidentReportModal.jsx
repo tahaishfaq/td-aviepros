@@ -34,14 +34,14 @@ export default function AddIncidentReportModal({ open, setOpen, onUpdate }) {
       const json = {
         incident_name: values.incident_name,
         incident_type: values.incident_type,
-        incident_description: values.incident_description,
+        incident_summary: values.incident_description,
         submitted_by: user?.email,
         submitted_at: moment().format("YYYY-MM-DD HH:mm:ss"),
       };
       console.log("Form values:", json);
       try {
         await axiosInstance
-          .post("/api/resource/Aviepros Incident Reports", json)
+          .post("/api/resource/Incident Reports", json)
           .then((res) => {
             console.log("Incident report submitted successfully:", res.data);
             toast.success("Incident report submitted successfully");
