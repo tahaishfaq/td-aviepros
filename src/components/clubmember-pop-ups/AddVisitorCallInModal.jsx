@@ -112,8 +112,7 @@ import {
                     {/* Modal Description */}
                     <div className="font-light max-w-xs">
                       <p className="text-sm text-gray-500">
-                        Enter guest details to notify security and ensure a seamless
-                        check-in experience.
+                      Calling in a visitor for your golf round or club visit? Enter their details here for same-day gate access.
                       </p>
                     </div>
   

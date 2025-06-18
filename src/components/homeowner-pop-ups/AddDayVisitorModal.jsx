@@ -139,6 +139,12 @@ export default function AddDayVisitorModal({ open, setOpen, onUpdate }) {
                     </button>
                   </div>
 
+                  <div className="font-light max-w-xs">
+                    <p className="text-sm text-gray-500">
+                      {user?.is_101_duntreath === 1 ? "Log a day visitor for quick club access." : "Add details of someone visiting your home for a short period — like a delivery, contractor, or person you know — to ensure smooth gate clearance."}
+                    </p>
+                  </div>
+
                   {/* Form */}
                   <form onSubmit={formik.handleSubmit} className="space-y-4">
                     {/* First Name and Last Name in a Grid */}

@@ -47,3 +47,21 @@ body {
 .changeColor{
   filter: invert(1);
 }
+
+.rdp-range_start .rdp-day_button{
+  background-color: #57c113 !important;
+  border-color: #57c113 !important;
+}
+
+.rdp-range_end .rdp-day_button{
+  background-color: #57c113 !important;
+  border-color: #57c113 !important;
+}
+
+.rdp-chevron{
+  fill: #57c113 !important;
+}
+
+.rdp-today:not(.rdp-outside){
+  color:#57c113 !important;  
+}

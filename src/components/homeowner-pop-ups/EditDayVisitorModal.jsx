@@ -14,6 +14,7 @@ import { toast, Toaster } from "sonner";
 import moment from "moment";
 import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
+import { useAuth } from "../../context/AuthContext";
 
 // Custom CSS for the checkbox (copied from AddDayVisitorModal)
 const customStyles = `
@@ -63,6 +64,8 @@ export default function EditDayVisitorModal({
 
   // State for managing the termination date
   const [selectedDate, setSelectedDate] = useState(null);
+
+  const {user} = useAuth()
 
   useEffect(() => {
     // Set the initial value of selectedDate to the visitor's termination date
@@ -177,6 +180,13 @@ export default function EditDayVisitorModal({
                       <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                     </button>
                   </div>
+
+                  <div className="font-light max-w-xs">
+                    <p className="text-sm text-gray-500">
+                      {user?.is_101_duntreath === 1 ? "Log a day visitor for quick club access." : "Add details of someone visiting your home for a short period — like a delivery, contractor, or person you know — to ensure smooth gate clearance."}
+                    </p>
+                  </div>
+
 
                   {/* Form */}
                   <form onSubmit={formik.handleSubmit} className="space-y-4">

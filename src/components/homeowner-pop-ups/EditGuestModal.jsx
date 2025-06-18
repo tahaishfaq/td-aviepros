@@ -117,6 +117,14 @@ export default function EditGuestModal({ open, setOpen, guest, onUpdate }) {
                     </button>
                   </div>
 
+                  <div className="font-light max-w-xs">
+                    <p className="text-sm text-gray-500">
+                      {user?.is_101_duntreath === 1
+                        ? "Add an employee for authorized club access."
+                        : "Register a guest who will be visiting you frequently. This helps security recognize approved visitors who can visit you anytime."}{" "}
+                    </p>
+                  </div>
+
                   {/* Form */}
                   <form onSubmit={formik.handleSubmit} className="space-y-4">
                     <div className="grid sm:grid-cols-2 lg:grid-cols-2 grid-cols-1 gap-4">

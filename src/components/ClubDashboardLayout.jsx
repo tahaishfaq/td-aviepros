@@ -15,9 +15,21 @@ import { toast, Toaster } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 const quickActions = [
-  { title: "Guest List", icon: usertime },
-  { title: "Report a Visitor", icon: addteam },
-  { title: "Secondary Member", icon: usergroup },
+  {
+    title: "Guest List",
+    icon: usertime,
+    description: "Add club guests ahead of time so they’re cleared to access the club without delays (limit: 6)."
+  },
+  {
+    title: "Report a Visitor",
+    icon: addteam,
+    description: "Calling in a visitor for your golf round or club visit? Enter their details here for same-day gate access."
+  },
+  {
+    title: "Secondary Member",
+    icon: usergroup,
+    description: "Add or manage secondary members of your membership who are allowed access to the club."
+  }
 ];
 
 const ClubDashboardLayout = () => {
@@ -202,9 +214,12 @@ const ClubDashboardLayout = () => {
                     <img src={arrow} alt="Arrow icon" className="size-6" />
                   </div>
                 </div>
+                <div className="space-y-1">
                 <span className="text-lg font-medium text-gray-900">
                   {action.title}
                 </span>
+                <p className="text-sm text-gray-500">{action.description}</p>
+              </div>
               </div>
             </div>
           ))}

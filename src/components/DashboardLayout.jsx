@@ -31,33 +31,43 @@ const DashboardLayout = () => {
           {
             title: "Report a Visitor",
             icon: location_user,
+            description: "Log a day visitor for quick club access.",
           },
           {
-            title: "Add Employee", // Changed copy from "Add Guest"
+            title: "Add Employee",
             icon: add_team,
+            description: "Add an employee for authorized club access.",
           },
           {
             title: "Incident Report",
             icon: report,
+            description: "Submit a report for any witnessed incident.",
           },
         ]
       : [
           {
             title: "Report a Visitor",
             icon: location_user,
+            description:
+              "Add details of someone visiting your home for a short period — like a delivery, contractor, or person you know — to ensure smooth gate clearance.",
           },
           {
             title: "Add Guest",
             icon: add_team,
+            description:
+              "Register a guest who will be visiting you frequently. This helps security recognize approved visitors who can visit you anytime.",
           },
           {
             title: "Vacation Alert",
             icon: calendar,
+            description:
+              "Heading out of town? Let security know so they can keep a closer watch on your property during your absence.",
           },
-
           {
             title: "Incident Report",
             icon: report,
+            description:
+              "Report any suspicious or security-related activity in your area to notify the guards for further review.",
           },
         ];
 
@@ -222,10 +232,10 @@ const DashboardLayout = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-0 lg:px-0 md:px-2 pt-6 sm:pb-0 lg:pb-0 pb-3 space-y-6">
       <div className="">
         <h1 className="text-3xl font-medium">
-          hey! Welcome to{" "}
+          Hey! Welcome to{" "}
           <div className="flex gap-x-2">
-            <span className="">AVIE PRO</span>
-            <img src={claps} alt="clap" className="size-7 object-contain" />
+            <span className="">Traffic Dash</span>
+            {/* <img src={claps} alt="clap" className="size-7 object-contain" /> */}
           </div>
         </h1>
       </div>
@@ -260,9 +270,12 @@ const DashboardLayout = () => {
                   <img src={arrow} alt="Arrow icon" className="size-6" />
                 </div>
               </div>
-              <span className="text-lg font-medium text-gray-900">
-                {action.title}
-              </span>
+              <div className="space-y-1">
+                <span className="text-lg font-medium text-gray-900">
+                  {action.title}
+                </span>
+                <p className="text-sm text-gray-500">{action.description}</p>
+              </div>
             </div>
           </div>
         ))}
@@ -276,7 +289,6 @@ const DashboardLayout = () => {
         } gap-4`}
       >
         {/* Vacations Section (only if user?.is_101_duntreath != 1) */}
-        
 
         {/* Visitor Section */}
         <div className="bg-white p-4 rounded-lg border border-[#F5F5F5] space-y-3">

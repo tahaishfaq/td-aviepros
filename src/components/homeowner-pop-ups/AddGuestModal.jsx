@@ -118,10 +118,9 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
                   {/* Modal Description */}
                   <div className="font-light max-w-xs">
                     <p className="text-sm text-gray-500">
-                      Enter{" "}
-                      {user?.is_101_duntreath === 1 ? "employee" : "guest"}{" "}
-                      details to notify security and ensure a seamless check-in
-                      experience.
+                      {user?.is_101_duntreath === 1
+                        ? "Add an employee for authorized club access."
+                        : "Register a guest who will be visiting you frequently. This helps security recognize approved visitors who can visit you anytime."}{" "}
                     </p>
                   </div>
 
@@ -144,11 +143,12 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
                           onBlur={formik.handleBlur}
                           value={formik.values.firstName}
                         />
-                        {formik.touched.firstName && formik.errors.firstName && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {formik.errors.firstName}
-                          </p>
-                        )}
+                        {formik.touched.firstName &&
+                          formik.errors.firstName && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {formik.errors.firstName}
+                            </p>
+                          )}
                       </div>
 
                       <div className="border border-[#00000014] rounded-lg py-2 px-4">

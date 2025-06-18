@@ -1,4 +1,3 @@
-// src/components/VacationAlertModal.jsx
 import {
   Dialog,
   DialogPanel,
@@ -13,34 +12,40 @@ import axiosInstance from "../../utils/axiosInstance";
 import { useAuth } from "../../context/AuthContext";
 import { toast, Toaster } from "sonner";
 import moment from "moment";
-import { DateRange } from "react-date-range"; // Import react-date-range
-import "react-date-range/dist/styles.css"; // Main style file
-import "react-date-range/dist/theme/default.css"; // Theme CSS file
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+
+// Custom modifiers and styles for DayPicker
+const modifiers = {
+  disabled: { before: new Date() },
+};
+
+const modifiersStyles = {
+  disabled: { opacity: 0.5, cursor: "not-allowed" },
+  range_start: { color: "white", borderRadius: "50%" },
+  range_end: {  color: "white", borderRadius: "50%" },
+  range_middle: { backgroundColor: "#DCFCE7", color: "#57c113", borderRadius: "50%" },
+};
 
 export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
   const { user } = useAuth();
-  const [dateRange, setDateRange] = useState([
-    {
-      startDate: null,
-      endDate: null,
-      key: "selection",
-    },
-  ]);
+  const [pickerValue, setPickerValue] = useState({ from: null, to: null });
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [showPicker, setShowPicker] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      officer_name: "",
       vacation_note: "",
     },
     onSubmit: async (values, { setSubmitting }) => {
       const json = {
         homeowner: user?.homeowner_address,
-        vacation_start_date: dateRange[0].startDate
-          ? moment(dateRange[0].startDate).format("YYYY-MM-DD")
+        vacation_start_date: pickerValue.from
+          ? moment(pickerValue.from).format("YYYY-MM-DD")
           : null,
-        vacation_end_date: dateRange[0].endDate
-          ? moment(dateRange[0].endDate).format("YYYY-MM-DD")
+        vacation_end_date: pickerValue.to
+          ? moment(pickerValue.to).format("YYYY-MM-DD")
           : null,
         submitted_by: user?.email,
         vacation_note: values.vacation_note,
@@ -60,13 +65,9 @@ export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
       } finally {
         setSubmitting(false);
         formik.resetForm();
-        setDateRange([
-          {
-            startDate: null,
-            endDate: null,
-            key: "selection",
-          },
-        ]);
+        setPickerValue({ from: null, to: null });
+        setStartDate("");
+        setEndDate("");
         setOpen(false);
       }
     },
@@ -74,13 +75,18 @@ export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
 
   // Format the date range for display
   const formatDateRange = () => {
-    const start = dateRange[0].startDate
-      ? moment(dateRange[0].startDate).format("D MMM")
-      : "";
-    const end = dateRange[0].endDate
-      ? moment(dateRange[0].endDate).format("D MMM")
-      : "";
+    const start = pickerValue.from ? moment(pickerValue.from).format("D MMM") : "";
+    const end = pickerValue.to ? moment(pickerValue.to).format("D MMM") : "";
     return start && end ? `${start} - ${end}` : "Select Date";
+  };
+
+  // Handle DayPicker selection
+  const onSelect = (range) => {
+    if (range) {
+      setPickerValue(range);
+      setStartDate(range.from ? moment(range.from).format("D MMM") : "");
+      setEndDate(range.to ? moment(range.to).format("D MMM") : "");
+    }
   };
 
   return (
@@ -131,8 +137,7 @@ export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
                   {/* Description */}
                   <div className="font-light max-w-xs">
                     <p className="text-sm text-gray-500">
-                      Let your Security Team know when you'll be away so they
-                      can help keep your home safe.
+                    Heading out of town? Let security know so they can keep a closer watch on your property during your absence.
                     </p>
                   </div>
 
@@ -194,22 +199,21 @@ export default function AddVacationAlertModal({ open, setOpen, onUpdate }) {
                         )}
                       </div>
                       {showPicker && (
-                        <div className="mt-2">
-                          <DateRange
-                            editableDateInputs={true}
-                            onChange={(item) => {
-                              setDateRange([item.selection]);
-                              if (
-                                item.selection.startDate &&
-                                item.selection.endDate
-                              ) {
-                                setShowPicker(false);
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="">
+                            <DayPicker
+                              id="test"
+                              mode="range"
+                              defaultMonth={new Date()}
+                              selected={pickerValue}
+                              modifiers={modifiers}
+                              modifiersStyles={modifiersStyles}
+                              onSelect={onSelect}
+                              disabled={(day) =>
+                                moment(day).isBefore(moment(new Date()), "day")
                               }
-                            }}
-                            moveRangeOnFirstSelection={false}
-                            ranges={dateRange}
-                            dateDisplayFormat="d MMM"
-                          />
+                            />
+                          </div>
                         </div>
                       )}
                     </div>

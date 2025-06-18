@@ -103,6 +103,14 @@ export default function AddIncidentReportModal({ open, setOpen, onUpdate }) {
                     </button>
                   </div>
 
+                  <div className="font-light max-w-xs">
+                    <p className="text-sm text-gray-500">
+                     
+                      {user?.is_101_duntreath === 1 ? "Submit a report for any witnessed incident." : "Report any suspicious or security-related activity in your area to notify the guards for further review."}{" "}
+                      
+                    </p>
+                  </div>
+
                   {/* Form */}
                   <form onSubmit={formik.handleSubmit} className="space-y-4">
                     {/* Incident Type (Select Category) */}

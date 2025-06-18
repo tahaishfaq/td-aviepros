@@ -26,10 +26,10 @@ const Footer = () => {
             <div className="flex sm:items-center items-start justify-start gap-2.5 flex-col sm:flex-row">
               {/* Google Play Button */}
               <a
-                href="https://play.google.com/store"
+                href="https://play.google.com/store/apps/details?id=com.merak.dashaviepros"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-white text-black rounded-lg px-4 py-2 w-auto"
+                className="flex cursor-pointer items-center gap-2 bg-white text-black rounded-lg px-4 py-2 w-auto"
               >
                 <img
                   src={google}
@@ -44,10 +44,10 @@ const Footer = () => {
 
               {/* App Store Button */}
               <a
-                href="https://www.apple.com/app-store/"
+                href="https://apps.apple.com/pk/app/the-traffic-dash/id6744329765/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-white text-black rounded-lg px-4 py-2 w-auto"
+                className="flex cursor-pointer items-center gap-2 bg-white text-black rounded-lg px-4 py-2 w-auto"
               >
                 <img
                   src={apple}

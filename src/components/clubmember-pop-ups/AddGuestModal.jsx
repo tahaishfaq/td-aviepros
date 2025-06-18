@@ -123,8 +123,7 @@ export default function AddGuestModal({ open, setOpen, onUpdate }) {
                   {/* Modal Description */}
                   <div className="font-light max-w-xs">
                     <p className="text-sm text-gray-500">
-                      Enter guest details to notify security and ensure a seamless
-                      check-in experience.
+                    Add club guests ahead of time so they’re cleared to access the club without delays (limit: 6).
                     </p>
                   </div>
 
